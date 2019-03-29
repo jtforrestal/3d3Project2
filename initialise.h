@@ -5,8 +5,7 @@
 #include<string>
 #include<iomanip>
 #include <cstdlib>
-#include "DVTEntry.h"
-#include "DVT.h"
+#include "DVT.cpp"
 
 
 void initialise(const std::string& name,DVT& forwardingTable,const std::string& fileName  );

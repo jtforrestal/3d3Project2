@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         return 1;
     }
     
-      std::string Test_Message = "TYPE:CTRL\nPort_Name:A\nPort_Cost:5\nPort_Number:5000\nThis content is data";
+      std::string Test_Message = "TYPE:CTRL\nPort_Name:F\nPort_Cost:5\nPort_Number:5000\nThis content is data";
     // loop through all the results and make a socket
     for(p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype,

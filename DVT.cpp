@@ -1,281 +1,115 @@
-#include "DVT.h"
-#include "DVTEntry.h"
+//--------------------------------------------------
+//      DVT_Table
+//-----------------------------------------------
+
+#include <string>
+#include <iostream>
+#include <stdio.h>
+
+#include "DVT_Entry.cpp"
+
+class DVT{
+    public:
+    DVT_Entry *top;
+    DVT_Entry *bottom;
+    int table_length;
+    std::string Router_name;
+
+    DVT();
+    void set_Router_name(std::string name);
+    void print_table();
+    void add_node(std::string src, std::string dest, int port,int cost);
+    void init_node(std::string src, std::string dest, int port,int cost);
+    bool removeNode(std::string name);
+
+
+
+};
 
 DVT::DVT(){
-  firstPtr =nullptr;
-  lastPtr = nullptr;
+    top =  NULL;
+    bottom =  NULL;
+    table_length = 0;
 }
 
-// insert a DVTEntry object at the front of the list
-void DVT::insertAtFront(std::string dest, int port, int cost) {
-  DVTEntry* newPtr{ getNewNode(dest, port,cost) };
-
-  if (isEmpty()) {
-    firstPtr = lastPtr = newPtr;
-
-  }
-  else {
-    lastPtr->nextPtr = newPtr;
-    firstPtr = newPtr;
-  }
+void DVT::set_Router_name(std::string name){
+  Router_name = name;
 }
-// insert a route object at the back
-void DVT::insertAtBack(std::string dest, int port, int cost) {
-  DVTEntry* newPtr{getNewNode(dest,port,cost) };
 
-  if (isEmpty()) {
-    firstPtr = lastPtr = newPtr;
+void DVT::print_table(){
+    DVT_Entry *curr;
+    curr = top;
 
-  }
-  else {
-    lastPtr->nextPtr = newPtr;
-    lastPtr = newPtr;
-  }
-}
-//
-bool DVT::removeFromFront() {
-  if (isEmpty()) {
-    return false;
-  }
-  else {
-    DVTEntry* tempPtr{ firstPtr };
-    if (firstPtr == lastPtr) {
-      firstPtr = lastPtr = nullptr;
+    while(curr != NULL){
+        std::cout <<"DV Source Name: " << curr->DVT_src_name << " DV Dest Name: " << curr->DVT_dest_name  << " DV Link Cost: " << curr->DVT_link_cost <<  " DV Port: " << curr->DVT_port << std::endl;
+        curr = curr->next_DVT;
+    
     }
-    else {
-      firstPtr = firstPtr->nextPtr;
+    
+}
 
+void DVT::init_node(std::string src,std::string dest, int port,int cost){
+  if(src ==  Router_name ){
+    DVT_Entry* new_Entry = new DVT_Entry(src,dest,port,cost);
+
+    if (bottom == NULL){
+        top = bottom = new_Entry;
     }
 
-    delete tempPtr;
-    return true;
+    else{
+        bottom->setNext(new_Entry);
+        bottom = new_Entry;
+    
+    }
+    table_length++;
   }
+  //Else dont make the node 
 }
 
-bool DVT::removeFromBack() {
-  if (isEmpty()) {
-    return false;
-  }
-  else {
-    DVTEntry* tempPtr{ lastPtr };
-    if (firstPtr == lastPtr) {
-      firstPtr = lastPtr = nullptr;
-    }
-    else {
-      DVTEntry* currentPtr{ firstPtr };
-      while (currentPtr->nextPtr != lastPtr) {
-        currentPtr = currentPtr->nextPtr;
 
-      }
-      lastPtr = currentPtr;
-      currentPtr->nextPtr = nullptr;
+void DVT::add_node(std::string src,std::string dest, int port,int cost){
+  
+    DVT_Entry* new_Entry = new DVT_Entry(src,dest,port,cost);
+
+    if (bottom == NULL){
+        top = bottom = new_Entry;
     }
 
-    delete tempPtr;
-    return true;
-  }
-}
-
-// check if the lis tis empty
-bool DVT::isEmpty() const{
-  return firstPtr == nullptr;
-}
-
-bool DVT::getByIndex(int& index, std::string& dest, int& port, int& cost) const{
-  int step = 0;
-  if (isEmpty()) {
-    //std::cout << "The table is empty \n";
-    return false;
-  }
-  else{
-    DVTEntry* currentPtr{firstPtr};
-    while(currentPtr!=nullptr){
-      if(step == index){
-         dest = currentPtr->dvt_dest;
-         port = currentPtr->dvt_port;
-         cost = currentPtr->dvt_cost;
-        return true;
-      }
-      currentPtr = currentPtr->nextPtr;
-      step++;
+    else{
+        bottom->setNext(new_Entry);
+        bottom = new_Entry;
+    
     }
-    return false;
-  }
+    table_length++;
+  //Else dont make the node 
 }
 
-// search based on destination name, takes string and route, returns false if not found
-// if found returns true and fills value with the whole route
-// All things going to plan each table should have only one of each destination
-bool DVT::searchDest(std::string term, std::string& dest, int& port, int& cost){
-  //std::cout << "search Term is " << term << "\n";
-  if (isEmpty()) {
-    //std::cout << "The table is empty \n";
-    return false;
-  }
-  else{
-    DVTEntry* currentPtr{firstPtr};
-    while(currentPtr!=nullptr){
-      //std::cout << currentPtr->entry.getDest()<< "\n";
-      if( term == currentPtr->dvt_dest){
-        dest = currentPtr->dvt_dest;
-        port = currentPtr->dvt_port;
-        cost = currentPtr->dvt_cost;
-        return true;
-      }
-      currentPtr = currentPtr->nextPtr;
+bool DVT::removeNode(std::string name){
+
+    DVT_Entry* curr =  top;
+    DVT_Entry* prev = top;
+
+    while(curr != 0){
+        if(curr->DVT_src_name == name){
+            if (curr == top){
+                top = curr->next_DVT;
+            }
+            else
+            {
+                prev->setNext(curr->next_DVT);
+                if(curr == bottom){
+                    bottom = prev;
+                }
+            }
+            delete curr;
+            table_length--;
+            return true;
+            
+        }
+        prev = curr;
+        curr = curr->next_DVT;
+
     }
+
     return false;
-  }
-}
-//Set destination to port set a new port
-bool DVT::setPortforDest( std::string dest, int port){
-
-  if (isEmpty()) {
-    //std::cout << "The table is empty \n";
-    return false;
-  }
-  else{
-    DVTEntry* currentPtr{firstPtr};
-    while(currentPtr!=nullptr){
-      //std::cout << currentPtr->entry.getDest()<< "\n";
-      if( dest == currentPtr->dvt_dest){
-        currentPtr->setPort(port);
-        //std::cout << "Dest  " << dest  <<" set to port "<< port<< "\n";
-        return true;
-      }
-      currentPtr = currentPtr->nextPtr;
-    }
-    return false;
-  }
-}
-//Overloaded version of the function which returns the cost too
-bool DVT::setPortforDest( std::string dest, int port, int&cost){
-
-  if (isEmpty()) {
-    //std::cout << "The table is empty \n";
-    return false;
-  }
-  else{
-    DVTEntry* currentPtr{firstPtr};
-    while(currentPtr!=nullptr){
-      //std::cout << currentPtr->entry.getDest()<< "\n";
-      if( dest == currentPtr->dvt_dest){
-        currentPtr->setPort(port);
-      cost = currentPtr->dvt_cost;
-        //std::cout << "Dest  " << dest  <<" set to port "<< port<< "\n";
-        return true;
-      }
-      currentPtr = currentPtr->nextPtr;
-    }
-    return false;
-  }
-}
-//Set destination to port set a new port
-bool DVT::setCostforDest( std::string dest, int cost){
-
-  if (isEmpty()) {
-    // << "The table is empty \n";
-    return false;
-  }
-  else{
-    DVTEntry* currentPtr{firstPtr};
-    while(currentPtr!=nullptr){
-      ////std::cout << currentPtr->entry.getDest()<< "\n";
-      if( dest == currentPtr->dvt_dest){
-        currentPtr->setCost(cost);
-        //std::cout << "Dest  " << dest  <<" set to cost "<< cost<< "\n";
-        return true;
-      }
-      currentPtr = currentPtr->nextPtr;
-    }
-    return false;
-  }
-}
-
-//Overloaded version of the function which returns the port
-bool DVT::setCostforDest( std::string dest, int& port, int cost){
-
-  if (isEmpty()) {
-    // << "The table is empty \n";
-    return false;
-  }
-  else{
-    DVTEntry* currentPtr{firstPtr};
-    while(currentPtr!=nullptr){
-      ////std::cout << currentPtr->entry.getDest()<< "\n";
-      if( dest == currentPtr->dvt_dest){
-        currentPtr->setCost(cost);
-        port = currentPtr->dvt_port;
-        //std::cout << "Dest  " << dest  <<" set to cost "<< cost<< "\n";
-        return true;
-      }
-      currentPtr = currentPtr->nextPtr;
-    }
-    return false;
-  }
-}
-
-//############
-//######This method sets the pointer value to point to the entry object in the list
-//######We may use this to access the entry directly
-bool DVT::getPtrforDest(  DVTEntry** pointer, std::string dest){
-
-  if (isEmpty()) {
-    //std::cout << "The table is empty \n";
-    return false;
-  }
-  else{
-    DVTEntry* currentPtr{firstPtr};
-    while(currentPtr!=nullptr){
-      //std::cout << currentPtr->dvt_dest<< "\n";
-      if( dest == currentPtr->dvt_dest){
-
-        *pointer = currentPtr;
-        //std::cout << "Dest  " << dest  <<" set to port "<< port<< "\n";
-        return true;
-      }
-      currentPtr = currentPtr->nextPtr;
-    }
-    return false;
-  }
-}
-
-// prints all objects in a List
-void DVT::print() const {
-  if (isEmpty()) {
-    std::cout << "The table is empty \n";
-    return;
-  }
-  else {
-    DVTEntry* currentPtr{ firstPtr };
-
-    std::cout << "The Table is : \n";
-    while (currentPtr != nullptr) {
-      currentPtr->printDVTEntry();
-      currentPtr = currentPtr->nextPtr;
-    }
-    std::cout << "\n\n";
-  }
-
-}
-
-DVTEntry* getNewNode(std::string dest, int port, int cost) {
-  return new DVTEntry(dest, port, cost);
-}
-
-DVT::~DVT(){
-  if (!isEmpty()) {
-    std::cout << "Destroying nodes \n";
-
-    DVTEntry* currentPtr{ firstPtr };
-    DVTEntry* tempPtr{ nullptr };
-
-    while (currentPtr != nullptr) {
-      tempPtr = currentPtr;
-      tempPtr->printDVTEntry();
-      currentPtr = currentPtr->nextPtr;
-      delete tempPtr;
-    }
-  }
-  std::cout << "All nodes Destroyed \n";
 }
