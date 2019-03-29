@@ -11,16 +11,19 @@ Methods
 All Methods
 -----------
 
-###DVT
+DVT
+---
 
-#####Private:
+Private:
+........
 
 **DVTEntry* getNewNode(string dest, int port, int cost)**
 
 Returns  a pointer to a new DVTEntry with those values.
 Used by other methods to build the table.
 
-#####Public:
+Public:
+.......
 
 **void insertAtFront(string dest, int port, int cost)**
 
@@ -69,7 +72,7 @@ Searches for a DVTEntry by dest, sets that entry's cost number to cost.
 
 **bool setCostforDest( string dest, int& port, int cost)**
 
-Sames as above but also returns the port number to port.
+Same as above but also returns the port number to port.
 
 **bool getPtrforDest(  DVTEntry** pointer, string dest)**
 
@@ -78,7 +81,7 @@ Searches the table for an entry matching dest
 Returns a pointer to that entry
 Pointer can be used to directly set values whilst within the DVT
 
-**usage:**  In main:
+**usage:**  In main:  
 DVTEntry* PtrHolder; // Declare pointer to entry  
 forwardingTable.getPtrforDest(&PtrHolder,"E"); //Set pointer to point to E  
 PtrHolder->setPort(999); // May now set E's values directly
@@ -89,7 +92,8 @@ PtrHolder->setPort(999); // May now set E's values directly
 Prints the values in the table to the command line
 
 
-###DVTEntry
+DVTEntry
+---------
 
 Getters:
 
