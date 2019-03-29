@@ -1,7 +1,7 @@
 #include "initialise.h"
 using namespace std;
 
-void initialise(const std::string& name,ListRoute& forwardingTable,const std::string& fileName  ){
+void initialise(const std::string& name,DVT& forwardingTable,const std::string& fileName  ){
   ifstream inGraphData(fileName,ios::in);
 
   if(!inGraphData){
@@ -22,8 +22,7 @@ void initialise(const std::string& name,ListRoute& forwardingTable,const std::st
     linkCost = stoi(buffer);
 
       if(source == name ){
-        route toTable(destination, destPort, linkCost);
-        forwardingTable.insertAtBack(toTable);
+        forwardingTable.insertAtBack(destination, destPort, linkCost);
         }
       }
   }

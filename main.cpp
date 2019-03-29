@@ -4,14 +4,14 @@
 #include<string>
 #include<iomanip>
 #include <cstdlib>
-#include "ListRoute.h"
-#include "route.h"
+#include "DVT.h"
+#include "DVTEntry.h"
 #include "initialise.h"
 using namespace std;
 
 int main()
 {
-	ListRoute forwardingTable;
+	DVT forwardingTable;
 	string routerName;
 
   cout << "Which Router is this ?" << endl;
@@ -20,7 +20,7 @@ int main()
 	initialise(routerName, forwardingTable, fileName);
 	forwardingTable.print();
 
-	route* PtrHolder;
+	DVTEntry* PtrHolder;
 
 	forwardingTable.getPtrforDest(&PtrHolder,"E");
 

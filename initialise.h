@@ -5,11 +5,11 @@
 #include<string>
 #include<iomanip>
 #include <cstdlib>
-#include "route.h"
-#include "ListRoute.h"
+#include "DVTEntry.h"
+#include "DVT.h"
 
 
-void initialise(const std::string& name,ListRoute& forwardingTable,const std::string& fileName  );
+void initialise(const std::string& name,DVT& forwardingTable,const std::string& fileName  );
 
 
 #endif
