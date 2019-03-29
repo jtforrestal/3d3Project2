@@ -15,9 +15,14 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <thread>
 
 #include "Packet.h"
 #include "Packet.cpp"
+#include "Neighbour_Table.cpp"
+
+
+
 
 //#define MYPORT "4900" -> passed as main() argument
 #define DESTPEER "4951" // hardcoded for now...
@@ -40,9 +45,14 @@ int main(int argc, char *argv[])
 // ./server [port#]
 
 {
+  
 
-
-    Packet PACKET;
+    NeighbourTable Table1;
+    Table1.add_node("Test", 3, 5000);
+    Table1.add_node("Test_2",4, 5001);
+    Table1.print_table();
+    std::cout <<"Leaving table";
+  //  Packet PACKET;
     
     // -----------------------------------------------------------
     //                  SET UP LISTENING SOCKET
@@ -64,7 +74,7 @@ int main(int argc, char *argv[])
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_flags = AI_PASSIVE; // use my IP
     
-    if ((rv = getaddrinfo(NULL, argv[1], &hints, &servinfo)) != 0) {
+    if ((rv = getaddrinfo(NULL, "5000", &hints, &servinfo)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         return 1;
     }
@@ -160,41 +170,6 @@ int main(int argc, char *argv[])
         // -----------------------------------------------------------
 
         if(type_message == "CTRL"){
-            
-            //Parse Port Name
-
-            int position_ctrl_1 = recvd_message.find(":");
-            recvd_message.erase(0,position_ctrl_1+1);
-            int position_ctrl_2 = recvd_message.find("\n");
-            std::string router_name = recvd_message.substr(0,position_ctrl_2);
-            recvd_message.erase(0, position_ctrl_2);
-
-            //Parse Cost Function
-
-            int position_ctrl_3 = recvd_message.find(":");
-            recvd_message.erase(0, position_ctrl_3);
-            int position_ctrl_4 = recvd_message.find("\n");
-            std::string router_cost = recvd_message.substr(0,position_ctrl_4);
-            recvd_message.erase(0,position_ctrl_4);
-
-            //Parse Port Number
-
-            int position_ctrl_5 = recvd_message.find(":");
-            recvd_message.erase(0,position_ctrl_5+1);
-            int position_ctrl_6 = recvd_message.find("\n");
-            std::string router_port = recvd_message.substr(0,position_ctrl_6);
-            recvd_message.erase(0,position_ctrl_6);
-
-            std::cout << "Router Name: " << router_name << " Router Cost: " <<router_cost << " Router Port: " << router_port << std::endl;
-
-
-
-            // Parse its name, cost and port number,
-            // Store in temporary location
-            //Perform bellman ford
-            //If that information is correct, store that in DVT table for A
-
-
 
             //Here we will execute the code to ping the new neighbours about any updates to the forwarding table
             //1)Update routing table
