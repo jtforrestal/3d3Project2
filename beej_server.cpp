@@ -17,8 +17,12 @@
 #include <vector>
 #include <thread>
 
-#include "Packet.h"
-#include "Packet.cpp"
+//-------------------------------------
+//      Included files
+//--------------------------------------
+#include "DVT.h"
+#include "DVT.cpp"
+#include "initialise.h"
 #include "Neighbour_Table.cpp"
 
 
@@ -45,14 +49,27 @@ int main(int argc, char *argv[])
 // ./server [port#]
 
 {
-  
 
+    //-------------------------------------------------
+    //          NeighbourTable Example
+    //-------------------------------------------------
     NeighbourTable Table1;
     Table1.add_node("Test", 3, 5000);
     Table1.add_node("Test_2",4, 5001);
     Table1.print_table();
     std::cout <<"Leaving table";
-  //  Packet PACKET;
+    
+    //-------------------------------------------------
+    //                 Initalise Table
+    //-------------------------------------------------
+
+	DVT DV_table_A; //Create the DVT table
+	std::string routerName = "A"; //Assign the router name
+
+    std::string fileName = "graph.csv"; //Load in the initial table
+	initialise(routerName, DV_table_A, fileName); //Call initialise function
+	DV_table_A.print(); // Print DVT table
+
     
     // -----------------------------------------------------------
     //                  SET UP LISTENING SOCKET
