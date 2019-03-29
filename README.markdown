@@ -79,8 +79,8 @@ Returns a pointer to that entry
 Pointer can be used to directly set values whilst within the DVT
 
 **usage:**  In main:
-DVTEntry* PtrHolder; // Declare pointer to entry
-forwardingTable.getPtrforDest(&PtrHolder,"E"); //Set pointer to point to E
+DVTEntry* PtrHolder; // Declare pointer to entry  
+forwardingTable.getPtrforDest(&PtrHolder,"E"); //Set pointer to point to E  
 PtrHolder->setPort(999); // May now set E's values directly
 
 
@@ -93,16 +93,16 @@ Prints the values in the table to the command line
 
 Getters:
 
-**std::string getDest()**
-**int getPort()**
+**std::string getDest()**  
+**int getPort()**  
 **int getCost()**
 
 
 Setters:
 
-**void setDest(std::string dest)**
-**void setPort(int port)**
-**void setCost(int cost)**
+**void setDest(string dest)**  
+**void setPort(int port)**  
+**void setCost(int cost)** ,
 
 
 **void printDVTEntry()**
