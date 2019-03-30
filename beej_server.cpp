@@ -86,7 +86,8 @@ int main(int argc, char *argv[])
     DV_table_A.init_node("F","D",10003,3);
     DV_table_A.init_node("F","E",10004,3);
     
-
+    std::string A_DVT;
+    A_DVT = DV_table_A.make_packet();
 
 
 //    std::string fileName = "graph.csv"; //Load in the initial table
@@ -177,6 +178,8 @@ int main(int argc, char *argv[])
         printf("listener: packet contains \"%s\"\n", buf);
         std::cout << std::endl;
 
+    
+     
         //------------------------------------------------------------
         //                  Parsing the Message for Type
         //------------------------------------------------------------
@@ -204,10 +207,6 @@ int main(int argc, char *argv[])
 
 
       //  std::cout << std::endl;   
-
-         // -----------------------------------------------------------
-        //              What to do based on Packet Recieved
-        // -----------------------------------------------------------
 
 
         if(type_message == "CTRL"){
@@ -277,7 +276,7 @@ int main(int argc, char *argv[])
 	      //  2)Perform bellman-ford algorithm
 	      //  3)Send on the message to nearest neighbhour
         
-        if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
+        if ((rv = getaddrinfo("localhost", "5001", &hints, &servinfo)) != 0) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
             return 1;
         } int position_ctrl_1 = recvd_message.find(":");
@@ -303,12 +302,20 @@ int main(int argc, char *argv[])
         
         // sending from the current server socket...
         // back to the address of server2
+         
+        int length = DV_table_A.return_length();
+
+
+        for(int i = 0; i < length; i++){
+
+            std::string A_packet_string = getpacket(i);
         
-        if ((numbytes = sendto(sockfd, buf, MAXBUFLEN-1, 0,
+            if ((numbytes = sendto(sockfd, A_DVT.c_str(), A_DVT.length(), 0,
                                p->ai_addr, p->ai_addrlen)) == -1) {
             perror("talker: sendto");
             exit(1);
        
+        }
         }
         
         std::cout << "P->ai_adder: " << p->ai_addr << "   P->ai_addrelen: " << p->ai_addrlen << std::endl << std::endl;

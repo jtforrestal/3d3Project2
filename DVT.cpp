@@ -21,6 +21,8 @@ class DVT{
     void add_node(std::string src, std::string dest, int port,int cost);
     void init_node(std::string src, std::string dest, int port,int cost);
     bool removeNode(std::string name);
+    int return_length();
+    std::string make_packet();
 
 
 
@@ -46,6 +48,11 @@ void DVT::print_table(){
     
     }
     
+}
+
+
+int DVT::return_length(){
+    return table_length;
 }
 
 void DVT::init_node(std::string src,std::string dest, int port,int cost){
@@ -112,4 +119,29 @@ bool DVT::removeNode(std::string name){
     }
 
     return false;
+}
+
+std::string DVT::make_packet(){
+
+    DVT_Entry *curr;
+    curr = top;
+    int port; // Message Port Number
+    int link;//message link cost
+    std::string dest; // message destination cost
+    std::string message = ""; //Final Message
+
+    while(curr != NULL){
+      //  std::cout << message << std::endl;
+        port =  curr->DVT_port;
+        link = curr->DVT_link_cost;
+        dest = curr->DVT_dest_name;
+
+        std::string link_string = std::to_string(link);
+        std::string port_string = std::to_string(port);
+
+        message = message + "TYPE:CTRL\nPort_Name:" +dest +"\nPort_Cost:"+link_string+"\nPort_Number:"+ port_string +"\n";      
+
+        curr =  curr->next_DVT;   
+        return message;
+    }
 }
