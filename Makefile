@@ -4,7 +4,7 @@ CXXFLAGS= -g -Wall -pthread -std=c++11 $(CXXOPTIMIZE)
 USERID=seanmurray
 CLASSES= 
 
-all: beej_server beej_client beej_server2 DVT DVTEntry initialise
+all: beej_client beej_server2 DVT DVTEntry initialise beej_server
 
 web-server: $(CLASSES)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $@.cpp

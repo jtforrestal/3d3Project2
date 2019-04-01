@@ -17,8 +17,12 @@
 #include <vector>
 #include <thread>
 
-//-------------------------------------
-//      Included files
+#include <sstream>
+#include <chrono>
+#include <future>
+
+//--------------------------------------
+//          Included files
 //--------------------------------------
 #include "DVT.h"
 #include "DVT.cpp"
@@ -26,12 +30,20 @@
 #include "Neighbour_Table.cpp"
 
 
-
+//--------------------------------------
+//              constants
+//--------------------------------------
 
 //#define MYPORT "4900" -> passed as main() argument
 #define DESTPEER "4951" // hardcoded for now...
-
 #define MAXBUFLEN 100
+
+const int NEIGHBOUR_UPDATE_TIMEOUT = 5; // if no recv() for 5s, ping neighbours
+
+
+//--------------------------------------
+//              functions
+//--------------------------------------
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -42,6 +54,12 @@ void *get_in_addr(struct sockaddr *sa)
     
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
+
+//-------------------------------------------------
+//
+//                     MAIN
+//
+//-------------------------------------------------
 
 int main(int argc, char *argv[])
 
@@ -110,6 +128,13 @@ int main(int argc, char *argv[])
             continue;
         }
         
+        // allow others to reuse the address
+        int yes = 1;
+        if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+            perror("setsockopt");
+            return 1;
+        }
+        
         break;
     }
     
@@ -119,14 +144,36 @@ int main(int argc, char *argv[])
     }
     
     freeaddrinfo(servinfo);
+    
+    // -----------------------------------------------------------
+    //                      TIMEOUT SET UP
+    // -----------------------------------------------------------
+    
+    // Span of 5 seconds
+    // The future monitors the output of the recvfrom() function
+    
+    addr_len = sizeof their_addr;
+    
+    std::chrono::seconds span (NEIGHBOUR_UPDATE_TIMEOUT);
+    
+    std::future<ssize_t> fut = std::async(recvfrom, sockfd, buf, MAXBUFLEN-1 , 0,
+                                          (struct sockaddr *)&their_addr, &addr_len);
+    
+    
+    //  *** NOT SURE IF THIS IS IN THE RIGHT PLACE? ***
+    //------------------------------------------------------------
+    //    Making a For Loop to store the forwarding table data
+    //------------------------------------------------------------
+    
+    
+    
     // -----------------------------------------------------------
     //                  BEGIN LISTENING FOR() LOOP
     // -----------------------------------------------------------
     
     for(;;) {
         
-        
-        printf("listener: waiting to recvfrom...\n");
+        printf("waiting to recvfrom...\n");
         
         addr_len = sizeof their_addr;
         if ((numbytes = recvfrom(sockfd, buf, MAXBUFLEN-1 , 0,
@@ -134,13 +181,71 @@ int main(int argc, char *argv[])
             perror("recvfrom");
             exit(1);
         }
+        
+        
+        // if
+        // (no recv after 5s)... timeout
+        
+        if(fut.wait_for(span)==std::future_status::timeout)
+        {
+            
+            // -----------------------------------------------------------
+            //                      PING/recvfrom() TIMEOUT
+            // -----------------------------------------------------------
+            
+            
+            std::cout << "recvfrom() timeout: pinging neighbours...\n\n";
+            
+            
+            // -----------------------------------------------------------
+            //              PING NEIGHBOURS WITH CURRENT TABLE:
+            // -----------------------------------------------------------
+            
+            
+            
+            
+            std::string ping_msg = "DV update";
+            
+            //std::string DESTPEER = argv[2];
+            // find DESTPEER port in neighbour table....
+            
+            if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
+                fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+                return 1;
+            }
+            // loop through all the results and make a socket(unused?) -> get address
+            for(p = servinfo; p != NULL; p = p->ai_next) {
+                if (socket(p->ai_family, p->ai_socktype,
+                           p->ai_protocol) == -1) {
+                    perror("talker: socket");
+                    continue;
+                }
+                break;
+            }
+            
+            if (p == NULL) {
+                fprintf(stderr, "talker: failed to create socket\n");
+                return 2;
+            }
+            
+            if ((numbytes = sendto(sockfd, &ping_msg, MAXBUFLEN-1, 0,
+                                   p->ai_addr, p->ai_addrlen)) == -1) {
+                perror("talker: sendto");
+                exit(1);
+            }
+            
+            
+            continue; // loop round
+        }
+        
+        
+        
+        
+        
+        // else
+        //  no timeout...
 
-        //------------------------------------------------------------
-        //    Making a For Loop to store the forwarding table data
-        //------------------------------------------------------------
-     
-
-
+        
         // -----------------------------------------------------------
         //                  MESSAGE RECEIVED
         // -----------------------------------------------------------
@@ -206,11 +311,11 @@ int main(int argc, char *argv[])
         //  -> to get the address we need: [p->ai_addr, p->ai_addrlen]
         
         
-         if(type_message == "DATA"){
+        if(type_message == "DATA"){
           
-          //----------------------------------------------------
-          //                Parse Destination IP
-          //----------------------------------------------------
+             //----------------------------------------------------
+             //                Parse Destination IP
+             //----------------------------------------------------
             std::string Dest_IP = recvd_message;
 
             int position_3 = Dest_IP.find("\n");
@@ -220,48 +325,57 @@ int main(int argc, char *argv[])
 
 
 
-           // 1)Look up routing table
-	      //  2)Perform bellman-ford algorithm
-	      //  3)Send on the message to nearest neighbhour
+            // 1)Look up routing table
+            // 2)Perform bellman-ford algorithm
+            // 3)Send on the message to nearest neighbhour
         
-        if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
-            fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-            return 1;
-        }
-        // loop through all the results and make a socket(unused?) -> get address
-        for(p = servinfo; p != NULL; p = p->ai_next) {
-            if (socket(p->ai_family, p->ai_socktype,
-                                 p->ai_protocol) == -1) {
-                perror("talker: socket");
-                continue;
+            if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
+                fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+                return 1;
+            }
+            
+            // loop through all the results and make a socket(unused?) -> get address
+            for(p = servinfo; p != NULL; p = p->ai_next) {
+                if (socket(p->ai_family, p->ai_socktype,
+                                     p->ai_protocol) == -1) {
+                    perror("talker: socket");
+                    continue;
+                }
+
+                break;
             }
 
-            break;
-        }
+            if (p == NULL) {
+                fprintf(stderr, "talker: failed to create socket\n");
+                return 2;
+            }
+            
+            // sending from the current server socket...
+            // back to the address of server2
+            
+            if ((numbytes = sendto(sockfd, buf, MAXBUFLEN-1, 0,
+                                   p->ai_addr, p->ai_addrlen)) == -1) {
+                perror("talker: sendto");
+                exit(1);
+            }
+            
+            std::cout << "P->ai_adder: " << p->ai_addr << "   P->ai_addrelen: " << p->ai_addrlen << std::endl << std::endl;
 
-        if (p == NULL) {
-            fprintf(stderr, "talker: failed to create socket\n");
-            return 2;
-        }
-        
-        // sending from the current server socket...
-        // back to the address of server2
-        
-        if ((numbytes = sendto(sockfd, buf, MAXBUFLEN-1, 0,
-                               p->ai_addr, p->ai_addrlen)) == -1) {
-            perror("talker: sendto");
-            exit(1);
-        }
-        
-        std::cout << "P->ai_adder: " << p->ai_addr << "   P->ai_addrelen: " << p->ai_addrlen << std::endl << std::endl;
-
-        freeaddrinfo(servinfo);
+            freeaddrinfo(servinfo);
+             
+            
+            
+            // reset recvfrom() listening function/timeout
+            
+            fut = std::async(recvfrom, sockfd, buf, MAXBUFLEN-1 , 0,
+                             (struct sockaddr *)&their_addr, &addr_len);
+             
+             
          }
-    }
-    
     // -----------------------------------------------------------
     //                      END LISTENING FOR LOOP
     // -----------------------------------------------------------
+    }
     
     close(sockfd);
     
