@@ -19,7 +19,7 @@ class DVT{
     void set_Router_name(std::string name);
     void print_table();
     void add_node(std::string src, std::string dest, int port,int cost);
-    void init_node(std::string src, std::string dest, int port,int cost);
+    void init_node(std::string src, std::string dest, int port,int cost,int init);
     bool removeNode(std::string name);
     int return_length();
     std::string make_packet();
@@ -55,7 +55,11 @@ int DVT::return_length(){
     return table_length;
 }
 
-void DVT::init_node(std::string src,std::string dest, int port,int cost){
+void DVT::init_node(std::string src,std::string dest, int port,int cost,int init){
+//Prints out content of values recieved
+//std::cout<< src <<dest <<port<<cost<<init<<std::endl;
+
+if(init == 1){
   if(src ==  Router_name ){
     DVT_Entry* new_Entry = new DVT_Entry(src,dest,port,cost);
 
@@ -70,7 +74,26 @@ void DVT::init_node(std::string src,std::string dest, int port,int cost){
     }
     table_length++;
   }
-  //Else dont make the node 
+}
+if((init == 0)){
+   //For Debugging Purposes
+        // std::cout<<"Adding outside of init" <<std::endl;
+        //std::cout<< src <<dest <<port<<cost<<init<<std::endl;
+
+    DVT_Entry* new_Entry = new DVT_Entry(src,dest,port,cost);
+
+    if (bottom == NULL){
+        top = bottom = new_Entry;
+    }
+
+    else{
+        bottom->setNext(new_Entry);
+        bottom = new_Entry;
+    
+    }
+    table_length++;
+  }
+
 }
 
 
@@ -88,6 +111,8 @@ void DVT::add_node(std::string src,std::string dest, int port,int cost){
     
     }
     table_length++;
+
+    std::cout << "Added" <<std::endl;
   //Else dont make the node 
 }
 
@@ -139,9 +164,11 @@ std::string DVT::make_packet(){
         std::string link_string = std::to_string(link);
         std::string port_string = std::to_string(port);
 
-        message = message + "TYPE:CTRL\nPort_Name:" +dest +"\nPort_Cost:"+link_string+"\nPort_Number:"+ port_string +"\n";      
+        message = message + "TYPE:CTRL\nSrc_Port:"+Router_name+"\nPort_Name:" +dest +"\nPort_Cost:"+link_string+"\nPort_Number:"+ port_string +"\n";      
 
         curr =  curr->next_DVT;   
-        return message;
     }
+        message = message + "TYPE:NULL";
+        return message;
+    
 }

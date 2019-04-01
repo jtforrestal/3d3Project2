@@ -26,6 +26,7 @@ DVT_Entry::DVT_Entry(std::string src, std::string dest,int port, int link_cost )
     DVT_dest_name = dest;
     DVT_link_cost = link_cost;
     DVT_port = port;
+    next_DVT = NULL;
 
 }
 

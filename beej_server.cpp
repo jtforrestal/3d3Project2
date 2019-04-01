@@ -67,28 +67,29 @@ int main(int argc, char *argv[])
 
     DV_table_A.set_Router_name(routerName);
 
-    DV_table_A.init_node("A","B",10001,4);
-    DV_table_A.init_node("A","E",10004,1);
-    DV_table_A.init_node("B","A",10000,4);
-    DV_table_A.init_node("B","C",10002,3);
-    DV_table_A.init_node("B","E",10004,2);
-    DV_table_A.init_node("B","F",10005,1);
-    DV_table_A.init_node("C","B",10001,3);
-    DV_table_A.init_node("C","D",10003,4);
-    DV_table_A.init_node("C","F",10005,1);
-    DV_table_A.init_node("D","C",10002,4);
-    DV_table_A.init_node("D","F",10005,3);
-    DV_table_A.init_node("E","A",10000,1);
-    DV_table_A.init_node("E","B",10001,2);
-    DV_table_A.init_node("E","F",10005,3);
-    DV_table_A.init_node("F","B",10001,1);
-    DV_table_A.init_node("F","C",10002,1);
-    DV_table_A.init_node("F","D",10003,3);
-    DV_table_A.init_node("F","E",10004,3);
+    DV_table_A.init_node("A","B",10001,4,1);
+    DV_table_A.init_node("A","E",10004,1,1);
+    DV_table_A.init_node("B","A",10000,4,1);
+    DV_table_A.init_node("B","C",10002,3,1);
+    DV_table_A.init_node("B","E",10004,2,1);
+    DV_table_A.init_node("B","F",10005,1,1);
+    DV_table_A.init_node("C","B",10001,3,1);
+    DV_table_A.init_node("C","D",10003,4,1);
+    DV_table_A.init_node("C","F",10005,1,1);
+    DV_table_A.init_node("D","C",10002,4,1);
+    DV_table_A.init_node("D","F",10005,3,1);
+    DV_table_A.init_node("E","A",10000,1,1);
+    DV_table_A.init_node("E","B",10001,2,1);
+    DV_table_A.init_node("E","F",10005,3,1);
+    DV_table_A.init_node("F","B",10001,1,1);
+    DV_table_A.init_node("F","C",10002,1,1);
+    DV_table_A.init_node("F","D",10003,3,1);
+    DV_table_A.init_node("F","E",10004,3,1);
+    
     
     std::string A_DVT;
     A_DVT = DV_table_A.make_packet();
-
+ 
 
 //    std::string fileName = "graph.csv"; //Load in the initial table
 //	initialise(routerName, DV_table_A, fileName); //Call initialise function
@@ -279,11 +280,10 @@ int main(int argc, char *argv[])
         if ((rv = getaddrinfo("localhost", "5001", &hints, &servinfo)) != 0) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
             return 1;
-        } int position_ctrl_1 = recvd_message.find(":");
-            recvd_message.erase(0,position_ctrl_1+1);
-            int position_ctrl_2 = recvd_message.find("\n");
-            std::string router_name = recvd_message.substr(0,position_ctrl_2);
-            recvd_message.erase(0, position_ctrl_2);
+        } 
+
+
+
         // loop through all the results and make a socket(unused?) -> get address
         for(p = servinfo; p != NULL; p = p->ai_next) {
             if (socket(p->ai_family, p->ai_socktype,
@@ -303,19 +303,15 @@ int main(int argc, char *argv[])
         // sending from the current server socket...
         // back to the address of server2
          
-        int length = DV_table_A.return_length();
-
-
-        for(int i = 0; i < length; i++){
-
-            std::string A_packet_string = getpacket(i);
-        
-            if ((numbytes = sendto(sockfd, A_DVT.c_str(), A_DVT.length(), 0,
+        std::cout << "Before Sending: " << std::endl;
+        std::cout << A_DVT << std::endl;
+        std::cout <<"Length: " << A_DVT.length() << std::endl;
+       
+        if ((numbytes = sendto(sockfd, A_DVT.c_str(), A_DVT.length(), 0,
                                p->ai_addr, p->ai_addrlen)) == -1) {
             perror("talker: sendto");
             exit(1);
        
-        }
         }
         
         std::cout << "P->ai_adder: " << p->ai_addr << "   P->ai_addrelen: " << p->ai_addrlen << std::endl << std::endl;

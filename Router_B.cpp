@@ -30,7 +30,7 @@
 //#define MYPORT "4900" -> passed as main() argument
 #define DESTPEER "4951" // hardcoded for now...
 
-#define MAXBUFLEN 100
+#define MAXBUFLEN 400
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -67,31 +67,33 @@ int main(int argc, char *argv[])
 
     DV_table_B.set_Router_name(routerName);
 
-    DV_table_B.init_node("A","B",10001,4);
-    DV_table_B.init_node("A","E",10004,1);
-    DV_table_B.init_node("B","A",10000,4);
-    DV_table_B.init_node("B","C",10002,3);
-    DV_table_B.init_node("B","E",10004,2);
-    DV_table_B.init_node("B","F",10005,1);
-    DV_table_B.init_node("C","B",10001,3);
-    DV_table_B.init_node("C","D",10003,4);
-    DV_table_B.init_node("C","F",10005,1);
-    DV_table_B.init_node("D","C",10002,4);
-    DV_table_B.init_node("D","F",10005,3);
-    DV_table_B.init_node("E","A",10000,1);
-    DV_table_B.init_node("E","B",10001,2);
-    DV_table_B.init_node("E","F",10005,3);
-    DV_table_B.init_node("F","B",10001,1);
-    DV_table_B.init_node("F","C",10002,1);
-    DV_table_B.init_node("F","D",10003,3);
-    DV_table_B.init_node("F","E",10004,3);
+
+    DV_table_B.init_node("A","B",10001,4,1);
+    DV_table_B.init_node("A","E",10004,1,1);
+    DV_table_B.init_node("B","A",10000,4,1);
+    DV_table_B.init_node("B","C",10002,3,1);
+    DV_table_B.init_node("B","E",10004,2,1);
+    DV_table_B.init_node("B","F",10005,1,1);
+    DV_table_B.init_node("C","B",10001,3,1);
+    DV_table_B.init_node("C","D",10003,4,1);
+    DV_table_B.init_node("C","F",10005,1,1);
+    DV_table_B.init_node("D","C",10002,4,1);
+    DV_table_B.init_node("D","F",10005,3,1);
+    DV_table_B.init_node("E","A",10000,1,1);
+    DV_table_B.init_node("E","B",10001,2,1);
+    DV_table_B.init_node("E","F",10005,3,1);
+    DV_table_B.init_node("F","B",10001,1,1);
+    DV_table_B.init_node("F","C",10002,1,1);
+    DV_table_B.init_node("F","D",10003,3,1);
+    DV_table_B.init_node("F","E",10004,3,1);
+    
     
 
 
 
 //    std::string fileName = "graph.csv"; //Load in the initial table
 //	initialise(routerName, DV_table_B, fileName); //Call initialise function
-	DV_table_B.print_table(); // Print DVT table
+	//DV_table_B.print_table(); // Print DVT table
 
     
     // -----------------------------------------------------------
@@ -158,12 +160,6 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        //------------------------------------------------------------
-        //    Making a For Loop to store the forwarding table data
-        //------------------------------------------------------------
-     
-
-
         // -----------------------------------------------------------
         //                  MESSAGE RECEIVED
         // -----------------------------------------------------------
@@ -174,8 +170,8 @@ int main(int argc, char *argv[])
                          s, sizeof s));
         printf("listener: packet is %d bytes long\n", numbytes);
         buf[numbytes] = '\0';
-        printf("listener: packet contains \"%s\"\n", buf);
         std::cout << std::endl;
+
 
         //------------------------------------------------------------
         //                  Parsing the Message for Type
@@ -202,26 +198,29 @@ int main(int argc, char *argv[])
         std::cout << "---------------Recieved Message-------------------" <<std::endl;
         //std::cout<< recvd_message << std::endl;
 
-        std::stringstream ss;
-        
-
-
-
       //  std::cout << std::endl;   
 
          // -----------------------------------------------------------
         //              What to do based on Packet Recieved
         // -----------------------------------------------------------
-
+        bool incoming_table = true;
 
         if(type_message == "CTRL"){
+            
+             std::cout << recvd_message << std::endl;
+            while(incoming_table){
+            
+            //-----------------------------------------
+            //             Source Port
+            //-----------------------------------------
 
-            for(int i =0; i < 2;i++){
+           int position_ctrl_A = recvd_message.find(":");
+            recvd_message.erase(0,position_ctrl_A+1);
+            int position_ctrl_B = recvd_message.find("\n");
+            std::string src_router_name = recvd_message.substr(0,position_ctrl_B);
+            recvd_message.erase(0, position_ctrl_B);
 
-            //std::cout <<"-----------------Message to be Parsed---------------" << std::endl;
-           // std::cout<< recvd_message<<std::endl;
-            //std::cout <<"_____________________________________________________"<<std::endl;
-            //while(type_message != "NULL"){
+        
 
             //------------------------------------------
             //          Destination Router Name
@@ -238,8 +237,11 @@ int main(int argc, char *argv[])
             int position_ctrl_3 = recvd_message.find(":");
             recvd_message.erase(0, position_ctrl_3+1);
             int position_ctrl_4 = recvd_message.find("\n");
-            std::string dest_router_cost = recvd_message.substr(0,position_ctrl_4);
+            std::string dest_router_cost_string = recvd_message.substr(0,position_ctrl_4);
             recvd_message.erase(0,position_ctrl_4);
+            
+            //Converting to int
+            int next_router_cost = std::stoi(dest_router_cost_string);
 
             //-------------------------------------------
             //            Parse Port Number                                                                                                                                                                             
@@ -247,9 +249,11 @@ int main(int argc, char *argv[])
             int position_ctrl_5 = recvd_message.find(":");
             recvd_message.erase(0,position_ctrl_5+1);
             int position_ctrl_6 = recvd_message.find("\n");
-            std::string next_hop_router_port = recvd_message.substr(0,position_ctrl_6);
+            std::string next_hop_port_string = recvd_message.substr(0,position_ctrl_6);
             recvd_message.erase(0,position_ctrl_6);
 
+            //Converting to int
+            int next_hop_port_num = std::stoi(next_hop_port_string);
             //-------------------------------------------
             //          Parse Next Type Message
             //-------------------------------------------
@@ -259,27 +263,27 @@ int main(int argc, char *argv[])
             int position_ctrl_8 = recvd_message.find("\n");
             std::string type_message = recvd_message.substr(0,position_ctrl_8);
             recvd_message.erase(0, position_ctrl_8);
-            std::cout << type_message << std::endl;
-        
+         //   std::cout<< type_message <<std::endl;
 
-
-            //------------------------------------------
-            //              Print out remaining message
-            //------------------------------------------
-            std::cout <<"Recvd: " << recvd_message << std::endl;
-
-           // std::cout << "Router Name: " << dest_router_name << " Router Cost: " <<router_cost << " Router Port: " << router_port << std::endl;
-
-           //int dest_cost = std::stoi(dest_router_cost);
-           //int hop = std::stoi(next_hop_router_port);
-           //DV_table_B.add_node(routerName,dest_router_name,10001,3);
-          //  }
+            if(incoming_table == true){
+         //   std::cout <<"Adding node" <<std::endl;
+           // std::cout << routerName <<dest_router_name <<next_hop_port_num<<next_router_cost << std::endl;
+            DV_table_B.init_node(src_router_name,dest_router_name,next_hop_port_num,next_router_cost,0);
             }
-           std::cout << "------------Printed Router Table---------------"<<std::endl;
+            
+            if(type_message == "NULL"){
+                incoming_table = false;
+             //   std::cout << "end of table" <<std::endl;
+            }
 
-           DV_table_B.print_table();
+           // std::cout << routerName << " " << dest_router_name<< " " << next_hop_port_num<< " " << next_router_cost<<std::endl;
+            
+            
+          
 
-        }   
+       } //End of While Loop
+ }   
+
 
         // -----------------------------------------------------------
         //                  FORWARD MESSAGE TO SERVER 2
@@ -350,6 +354,8 @@ int main(int argc, char *argv[])
 
         freeaddrinfo(servinfo);
          }
+
+         DV_table_B.print_table();
     }
     
     // -----------------------------------------------------------
