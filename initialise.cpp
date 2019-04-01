@@ -1,4 +1,5 @@
 #include "initialise.h"
+#include "DVT.cpp"
 using namespace std;
 
 void initialise(const std::string& name,DVT& forwardingTable,const std::string& fileName  ){
@@ -22,7 +23,7 @@ void initialise(const std::string& name,DVT& forwardingTable,const std::string& 
     linkCost = stoi(buffer);
 
       if(source == name ){
-        forwardingTable.insertAtBack(destination, destPort, linkCost);
+        forwardingTable = add(destination, destPort, linkCost);
         }
       }
   }

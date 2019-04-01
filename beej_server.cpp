@@ -24,9 +24,8 @@
 //--------------------------------------
 //          Included files
 //--------------------------------------
-#include "DVT.h"
 #include "DVT.cpp"
-#include "initialise.h"
+
 #include "Neighbour_Table.cpp"
 
 
@@ -71,11 +70,11 @@ int main(int argc, char *argv[])
     //-------------------------------------------------
     //          NeighbourTable Example
     //-------------------------------------------------
-    NeighbourTable Table1;
-    Table1.add_node("Test", 3, 5000);
-    Table1.add_node("Test_2",4, 5001);
-    Table1.print_table();
-    std::cout <<"Leaving table";
+   //NeighbourTable Table1;
+   // Table1.add_node("Test", 3, 5000);
+    //Table1.add_node("Test_2",4, 5001);
+    //Table1.print_table();
+    //std::cout <<"Leaving table";
     
     //-------------------------------------------------
     //                 Initalise Table
@@ -84,9 +83,35 @@ int main(int argc, char *argv[])
 	DVT DV_table_A; //Create the DVT table
 	std::string routerName = "A"; //Assign the router name
 
-    std::string fileName = "graph.csv"; //Load in the initial table
-	initialise(routerName, DV_table_A, fileName); //Call initialise function
-	DV_table_A.print(); // Print DVT table
+    DV_table_A.set_Router_name(routerName);
+
+    DV_table_A.init_node("A","B",10001,4,1);
+    DV_table_A.init_node("A","E",10004,1,1);
+    DV_table_A.init_node("B","A",10000,4,1);
+    DV_table_A.init_node("B","C",10002,3,1);
+    DV_table_A.init_node("B","E",10004,2,1);
+    DV_table_A.init_node("B","F",10005,1,1);
+    DV_table_A.init_node("C","B",10001,3,1);
+    DV_table_A.init_node("C","D",10003,4,1);
+    DV_table_A.init_node("C","F",10005,1,1);
+    DV_table_A.init_node("D","C",10002,4,1);
+    DV_table_A.init_node("D","F",10005,3,1);
+    DV_table_A.init_node("E","A",10000,1,1);
+    DV_table_A.init_node("E","B",10001,2,1);
+    DV_table_A.init_node("E","F",10005,3,1);
+    DV_table_A.init_node("F","B",10001,1,1);
+    DV_table_A.init_node("F","C",10002,1,1);
+    DV_table_A.init_node("F","D",10003,3,1);
+    DV_table_A.init_node("F","E",10004,3,1);
+    
+    
+    std::string A_DVT;
+    A_DVT = DV_table_A.make_packet();
+ 
+
+//    std::string fileName = "graph.csv"; //Load in the initial table
+//	initialise(routerName, DV_table_A, fileName); //Call initialise function
+	DV_table_A.print_table(); // Print DVT table
 
     
     // -----------------------------------------------------------
@@ -259,6 +284,8 @@ int main(int argc, char *argv[])
         printf("listener: packet contains \"%s\"\n", buf);
         std::cout << std::endl;
 
+    
+     
         //------------------------------------------------------------
         //                  Parsing the Message for Type
         //------------------------------------------------------------
@@ -287,15 +314,41 @@ int main(int argc, char *argv[])
 
       //  std::cout << std::endl;   
 
-         // -----------------------------------------------------------
-        //              What to do based on Packet Recieved
-        // -----------------------------------------------------------
 
         if(type_message == "CTRL"){
 
-            //Here we will execute the code to ping the new neighbours about any updates to the forwarding table
-            //1)Update routing table
-	        //2)Ping all neighbours letting them know of any updates
+            int position_ctrl_1 = recvd_message.find(":");
+            recvd_message.erase(0,position_ctrl_1+1);
+            int position_ctrl_2 = recvd_message.find("\n");
+            std::string dest_router_name = recvd_message.substr(0,position_ctrl_2);
+            recvd_message.erase(0, position_ctrl_2);
+
+            
+
+            //Parse Cost Function                                                                                                                                                                           
+
+            int position_ctrl_3 = recvd_message.find(":");
+            recvd_message.erase(0, position_ctrl_3);
+            int position_ctrl_4 = recvd_message.find("\n");
+            std::string dest_router_cost = recvd_message.substr(0,position_ctrl_4);
+            recvd_message.erase(0,position_ctrl_4);
+
+            //Parse Port Number                                                                                                                                                                             
+
+            int position_ctrl_5 = recvd_message.find(":");
+            recvd_message.erase(0,position_ctrl_5+1);
+            int position_ctrl_6 = recvd_message.find("\n");
+            std::string next_hop_router_port = recvd_message.substr(0,position_ctrl_6);
+            recvd_message.erase(0,position_ctrl_6);
+
+           // std::cout << "Router Name: " << dest_router_name << " Router Cost: " <<router_cost << " Router Port: " << router_port << std::endl;
+
+           //int dest_cost = std::stoi(dest_router_cost);
+           //int hop = std::stoi(next_hop_router_port);
+           DV_table_A.add_node(routerName,dest_router_name,10001,3);
+
+           DV_table_A.print_table();
+
         }   
 
         // -----------------------------------------------------------
@@ -329,6 +382,7 @@ int main(int argc, char *argv[])
             // 2)Perform bellman-ford algorithm
             // 3)Send on the message to nearest neighbhour
         
+<<<<<<< HEAD
             if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
                 fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
                 return 1;
@@ -371,6 +425,48 @@ int main(int argc, char *argv[])
                              (struct sockaddr *)&their_addr, &addr_len);
              
              
+=======
+        if ((rv = getaddrinfo("localhost", "5001", &hints, &servinfo)) != 0) {
+            fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+            return 1;
+        } 
+
+
+
+        // loop through all the results and make a socket(unused?) -> get address
+        for(p = servinfo; p != NULL; p = p->ai_next) {
+            if (socket(p->ai_family, p->ai_socktype,
+                                 p->ai_protocol) == -1) {
+                perror("talker: socket");
+                continue;
+            }
+
+            break;
+        }
+
+        if (p == NULL) {
+            fprintf(stderr, "talker: failed to create socket\n");
+            return 2;
+        }
+        
+        // sending from the current server socket...
+        // back to the address of server2
+         
+        std::cout << "Before Sending: " << std::endl;
+        std::cout << A_DVT << std::endl;
+        std::cout <<"Length: " << A_DVT.length() << std::endl;
+       
+        if ((numbytes = sendto(sockfd, A_DVT.c_str(), A_DVT.length(), 0,
+                               p->ai_addr, p->ai_addrlen)) == -1) {
+            perror("talker: sendto");
+            exit(1);
+       
+        }
+        
+        std::cout << "P->ai_adder: " << p->ai_addr << "   P->ai_addrelen: " << p->ai_addrlen << std::endl << std::endl;
+
+        freeaddrinfo(servinfo);
+>>>>>>> e65cd475c7704510170ddb9a271d172a2b44730d
          }
     // -----------------------------------------------------------
     //                      END LISTENING FOR LOOP
