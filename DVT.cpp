@@ -8,6 +8,7 @@
 
 #include "DVT_Entry.cpp"
 
+//Class Structure
 class DVT{
     public:
     DVT_Entry *top;
@@ -27,11 +28,11 @@ class DVT{
 
 
 };
-
-DVT::DVT(){
-    top =  NULL;
-    bottom =  NULL;
-    table_length = 0;
+//Initilise Table
+    DVT::DVT(){
+         top =  NULL;
+         bottom =  NULL;
+         table_length = 0;
 }
 
 void DVT::set_Router_name(std::string name){

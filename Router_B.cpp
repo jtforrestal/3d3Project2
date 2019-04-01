@@ -17,20 +17,31 @@
 #include <vector>
 #include <thread>
 
-//-------------------------------------
-//      Included files
+#include <sstream>
+#include <chrono>
+#include <future>
+
+//--------------------------------------
+//          Included files
 //--------------------------------------
 #include "DVT.cpp"
-
 #include "Neighbour_Table.cpp"
 
 
-
+//--------------------------------------
+//              constants
+//--------------------------------------
 
 //#define MYPORT "4900" -> passed as main() argument
 #define DESTPEER "4951" // hardcoded for now...
+#define MAXBUFLEN 1000
 
-#define MAXBUFLEN 400
+const int NEIGHBOUR_UPDATE_TIMEOUT = 5; // if no recv() for 5s, ping neighbours
+
+
+//--------------------------------------
+//              functions
+//--------------------------------------
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -41,6 +52,12 @@ void *get_in_addr(struct sockaddr *sa)
     
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
+
+//-------------------------------------------------
+//
+//                     MAIN
+//
+//-------------------------------------------------
 
 int main(int argc, char *argv[])
 
@@ -54,7 +71,7 @@ int main(int argc, char *argv[])
     //-------------------------------------------------
    //NeighbourTable Table1;
    // Table1.add_node("Test", 3, 5000);
-    //Table1.add_node("Test_2",4, 5001);
+    //Table1.add_node("Test_2",4, 5000);
     //Table1.print_table();
     //std::cout <<"Leaving table";
     
@@ -66,7 +83,6 @@ int main(int argc, char *argv[])
 	std::string routerName = "B"; //Assign the router name
 
     DV_table_B.set_Router_name(routerName);
-
 
     DV_table_B.init_node("A","B",10001,4,1);
     DV_table_B.init_node("A","E",10004,1,1);
@@ -88,12 +104,15 @@ int main(int argc, char *argv[])
     DV_table_B.init_node("F","E",10004,3,1);
     
     
-
-
+    std::string B_DVT;
+    B_DVT = DV_table_B.make_packet();
+    // /std::cout << B_DVT <<std::endl;
+    
+ 
 
 //    std::string fileName = "graph.csv"; //Load in the initial table
 //	initialise(routerName, DV_table_B, fileName); //Call initialise function
-	//DV_table_B.print_table(); // Print DVT table
+	DV_table_B.print_table(); // Print DVT table
 
     
     // -----------------------------------------------------------
@@ -108,9 +127,7 @@ int main(int argc, char *argv[])
     char buf[MAXBUFLEN];
     socklen_t addr_len;
     char s[INET6_ADDRSTRLEN];
-
-   // Packet P1;
-    
+     
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4
     hints.ai_socktype = SOCK_DGRAM;
@@ -135,6 +152,13 @@ int main(int argc, char *argv[])
             continue;
         }
         
+        // allow others to reuse the address
+        int yes = 1;
+        if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+            perror("setsockopt");
+            return 1;
+        }
+        
         break;
     }
     
@@ -144,22 +168,104 @@ int main(int argc, char *argv[])
     }
     
     freeaddrinfo(servinfo);
+    
+    // -----------------------------------------------------------
+    //                      TIMEOUT SET UP
+    // -----------------------------------------------------------
+    
+    // Span of 5 seconds
+    // The future monitors the output of the recvfrom() function
+    
+    addr_len = sizeof their_addr;
+    
+    std::chrono::seconds span (NEIGHBOUR_UPDATE_TIMEOUT);
+    
+    std::future<ssize_t> fut = std::async(recvfrom, sockfd, buf, MAXBUFLEN-1 , 0,
+                                          (struct sockaddr *)&their_addr, &addr_len);
+    
+    
+    //  *** NOT SURE IF THIS IS IN THE RIGHT PLACE? ***
+    //-------------------------------------------------e-----------
+    //    Making a For Loop to store the forwarding table data
+    //------------------------------------------------------------
+    
+    
+    
     // -----------------------------------------------------------
     //                  BEGIN LISTENING FOR() LOOP
     // -----------------------------------------------------------
     
     for(;;) {
         
-        
-        printf("listener: waiting to recvfrom...\n");
-        
-        addr_len = sizeof their_addr;
-        if ((numbytes = recvfrom(sockfd, buf, MAXBUFLEN-1 , 0,
-                                 (struct sockaddr *)&their_addr, &addr_len)) == -1) {
-            perror("recvfrom");
-            exit(1);
-        }
+        printf("waiting to recvfrom...\n");
 
+        
+        // if
+        // (no recv after 5s)... timeout
+        
+        if(fut.wait_for(span)==std::future_status::timeout)
+        {
+            
+            // -----------------------------------------------------------
+            //                      PING/recvfrom() TIMEOUT
+            // -----------------------------------------------------------
+            
+            
+            std::cout << "recvfrom() timeout: pinging neighbours...\n\n";
+            
+            
+            // -----------------------------------------------------------
+            //              PING NEIGHBOURS WITH CURRENT TABLE:
+            // -----------------------------------------------------------
+            
+            
+            
+         //   std::cout << B_DVT << std::endl;
+            std::string ping_msg = "DV update";
+            
+            //std::string DESTPEER = argv[2];
+            // find DESTPEER port in neighbour table....
+            
+            if ((rv = getaddrinfo("localhost", "5000", &hints, &servinfo)) != 0) {
+                fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+                return 1;
+            }
+            // loop through all the results and make a socket(unused?) -> get address
+            for(p = servinfo; p != NULL; p = p->ai_next) {
+                if (socket(p->ai_family, p->ai_socktype,
+                           p->ai_protocol) == -1) {
+                    perror("talker: socket");
+                    continue;
+                }
+                break;
+            }
+            
+            if (p == NULL) {
+                fprintf(stderr, "talker: failed to create socket\n");
+                return 2;
+            }
+            
+     //       std::cout << B_DVT << std::endl;
+        
+            if ((numbytes = sendto(sockfd, ping_msg.c_str(), ping_msg.length(), 0,
+                                   p->ai_addr, p->ai_addrlen)) == -1) {
+                perror("talker: sendto");
+                exit(1);
+            }
+
+            std::cout << "Update sent"<<std::endl;            
+            
+            continue; // loop round
+        }
+        
+        
+        
+        
+        
+        // else
+        //  no timeout...
+
+        
         // -----------------------------------------------------------
         //                  MESSAGE RECEIVED
         // -----------------------------------------------------------
@@ -170,19 +276,21 @@ int main(int argc, char *argv[])
                          s, sizeof s));
         printf("listener: packet is %d bytes long\n", numbytes);
         buf[numbytes] = '\0';
+        printf("listener: packet contains \"%s\"\n", buf);
         std::cout << std::endl;
 
-
+    
+     
         //------------------------------------------------------------
         //                  Parsing the Message for Type
         //------------------------------------------------------------
         //Either CTRL (Control message) or DATA (Datagram Message)
         
-
         //The data that is recived in the buffer gets stored in string recvd_message
         std::string recvd_message = buf;
 
-        std::cout << "-------------" << buf <<std::endl;
+        std::cout << "Recvd_message: " << std::endl;
+        std::cout << recvd_message << std::endl;
 
         //Extract the type of message, this removes the "Type:" from the recvd_message
         int position_1 = recvd_message.find(":");
@@ -193,28 +301,21 @@ int main(int argc, char *argv[])
         std::string type_message = recvd_message.substr(0,position_2); //Make a substring called type_message that stores either "CTRL" or "DATA" depending on the packet
        //std::cout << "Type: " << type_message << std::endl; //Print out to the Screen
         
-
         //Extract the body of the message
         recvd_message = recvd_message.erase(0, position_2+1); //Remove the Type of message header from the string
-       //std::cout << "Content of Message: " << std::endl;
-        std::cout << "---------------Recieved Message-------------------" <<std::endl;
-        //std::cout<< recvd_message << std::endl;
 
-      //  std::cout << std::endl;   
-
-         // -----------------------------------------------------------
-        //              What to do based on Packet Recieved
-        // -----------------------------------------------------------
-    bool incoming_table = true;
 
         if(type_message == "CTRL"){
-            
+
+            std::cout << recvd_message << std::endl;
+
+        /*   bool incoming_table = true;
             // std::cout << recvd_message << std::endl;
             while(incoming_table){
             
-            //-----------------------------------------
-            //             Source Port
-            //-----------------------------------------
+            //-----------------------------------
+            //           Source Port
+            //-----------------------------------
 
            int position_ctrl_A = recvd_message.find(":");
             recvd_message.erase(0,position_ctrl_A+1);
@@ -222,20 +323,18 @@ int main(int argc, char *argv[])
             std::string src_router_name = recvd_message.substr(0,position_ctrl_B);
             recvd_message.erase(0, position_ctrl_B);
 
-        
-
-            //------------------------------------------
-            //          Destination Router Name
-            //-------------------------------------------
+            //--------------------------------------
+            //         Destination Router Name
+            //--------------------------------------
             int position_ctrl_1 = recvd_message.find(":");
             recvd_message.erase(0,position_ctrl_1+1);
             int position_ctrl_2 = recvd_message.find("\n");
             std::string dest_router_name = recvd_message.substr(0,position_ctrl_2);
             recvd_message.erase(0, position_ctrl_2);
                                                                                                                                                    
-            //-------------------------------------------
+            //--------------------------------------
             //        Destination Router Cost
-            //-------------------------------------------
+            //--------------------------------------
             int position_ctrl_3 = recvd_message.find(":");
             recvd_message.erase(0, position_ctrl_3+1);
             int position_ctrl_4 = recvd_message.find("\n");
@@ -243,11 +342,11 @@ int main(int argc, char *argv[])
             recvd_message.erase(0,position_ctrl_4);
             
             //Converting to int
-            int next_router_cost = std::stoi(dest_router_cost_string);
+            //int next_router_cost = std::stoi(dest_router_cost_string);
 
-            //-------------------------------------------
+            //---------------------------------------
             //            Parse Port Number                                                                                                                                                                             
-            ///------------------------------------------
+            ///--------------------------------------
             int position_ctrl_5 = recvd_message.find(":");
             recvd_message.erase(0,position_ctrl_5+1);
             int position_ctrl_6 = recvd_message.find("\n");
@@ -255,7 +354,7 @@ int main(int argc, char *argv[])
             recvd_message.erase(0,position_ctrl_6);
 
             //Converting to int
-            int next_hop_port_num = std::stoi(next_hop_port_string);
+          //  int next_hop_port_num = std::stoi(next_hop_port_string);
             //-------------------------------------------
             //          Parse Next Type Message
             //-------------------------------------------
@@ -269,23 +368,23 @@ int main(int argc, char *argv[])
 
             if(incoming_table == true){
          //   std::cout <<"Adding node" <<std::endl;
-           // std::cout << routerName <<dest_router_name <<next_hop_port_num<<next_router_cost << std::endl;
-            DV_table_B.init_node(src_router_name,dest_router_name,next_hop_port_num,next_router_cost,0);
+            std::cout << routerName <<dest_router_name << next_hop_port_string<< dest_router_cost_string << std::endl;
+           // DV_table_B.init_node(src_router_name,dest_router_name,"5001",4,0);
             }
             
             if(type_message == "NULL"){
                 incoming_table = false;
              //   std::cout << "end of table" <<std::endl;
             }
+        */
 
            // std::cout << routerName << " " << dest_router_name<< " " << next_hop_port_num<< " " << next_router_cost<<std::endl;
             
             
           
 
-       } //End of While Loop
- }   
-
+       //} //End of While Loop
+        }   
 
         // -----------------------------------------------------------
         //                  FORWARD MESSAGE TO SERVER 2
@@ -300,14 +399,13 @@ int main(int argc, char *argv[])
         //  -> to get the address we need: [p->ai_addr, p->ai_addrlen]
         
         
-         if(type_message == "DATA"){
-
-             std::cout << "Something recieved" <<std::endl;
+        if(type_message == "DATA"){
+            
           
-          //----------------------------------------------------
-          //                Parse Destination IP
-          //----------------------------------------------------
-            std::string Dest_IP = recvd_message;
+             //----------------------------------------------------
+             //                Parse Destination IP
+             //----------------------------------------------------
+            std::string Dest_IP =  recvd_message;
 
             int position_3 = Dest_IP.find("\n");
             Dest_IP = Dest_IP.substr(0,position_3);
@@ -316,18 +414,19 @@ int main(int argc, char *argv[])
 
 
 
-           // 1)Look up routing table
-	      //  2)Perform bellman-ford algorithm
-	      //  3)Send on the message to nearest neighbhour
+            // 1)Look up routing table
+            // 2)Perform bellman-ford algorithm
+            // 3)Send on the message to nearest neighbhour
         
-        if ((rv = getaddrinfo("localhost", "5001", &hints, &servinfo)) != 0) {
+        if ((rv = getaddrinfo("localhost", "5000", &hints, &servinfo)) != 0) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
             return 1;
-        } int position_ctrl_1 = recvd_message.find(":");
-            recvd_message.erase(0,position_ctrl_1+1);
-            int position_ctrl_2 = recvd_message.find("\n");
-            std::string router_name = recvd_message.substr(0,position_ctrl_2);
-            recvd_message.erase(0, position_ctrl_2);
+        } 
+
+
+        std::string mess = "DV Update";
+
+
         // loop through all the results and make a socket(unused?) -> get address
         for(p = servinfo; p != NULL; p = p->ai_next) {
             if (socket(p->ai_family, p->ai_socktype,
@@ -343,11 +442,15 @@ int main(int argc, char *argv[])
             fprintf(stderr, "talker: failed to create socket\n");
             return 2;
         }
-            
+        
         // sending from the current server socket...
         // back to the address of server2
-        
-        if ((numbytes = sendto(sockfd, buf, MAXBUFLEN-1, 0,
+         
+      //  std::cout << "Before Sending: " << std::endl;
+        //std::cout << A_DVT << std::endl;
+        //std::cout <<"Length: " << A_DVT.length() << std::endl;
+       
+        if ((numbytes = sendto(sockfd, mess.c_str(), mess.length(), 0,
                                p->ai_addr, p->ai_addrlen)) == -1) {
             perror("talker: sendto");
             exit(1);
@@ -355,16 +458,23 @@ int main(int argc, char *argv[])
         }
         
         std::cout << "P->ai_adder: " << p->ai_addr << "   P->ai_addrelen: " << p->ai_addrlen << std::endl << std::endl;
+        }
+        
 
-        freeaddrinfo(servinfo);
-         }
-
-        // DV_table_B.print_table();
-    }
-    
+     
+           
+        freeaddrinfo(servinfo);    
+            // reset recvfrom() listening function/timeout
+            
+            fut = std::async(recvfrom, sockfd, buf, MAXBUFLEN-1 , 0,
+                             (struct sockaddr *)&their_addr, &addr_len);
+             
+             
+         
     // -----------------------------------------------------------
     //                      END LISTENING FOR LOOP
     // -----------------------------------------------------------
+    }
     
     close(sockfd);
     
