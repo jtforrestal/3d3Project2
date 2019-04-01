@@ -182,6 +182,8 @@ int main(int argc, char *argv[])
         //The data that is recived in the buffer gets stored in string recvd_message
         std::string recvd_message = buf;
 
+        std::cout << "-------------" << buf <<std::endl;
+
         //Extract the type of message, this removes the "Type:" from the recvd_message
         int position_1 = recvd_message.find(":");
         recvd_message.erase(0,position_1+1);
@@ -203,11 +205,11 @@ int main(int argc, char *argv[])
          // -----------------------------------------------------------
         //              What to do based on Packet Recieved
         // -----------------------------------------------------------
-        bool incoming_table = true;
+    bool incoming_table = true;
 
         if(type_message == "CTRL"){
             
-             std::cout << recvd_message << std::endl;
+            // std::cout << recvd_message << std::endl;
             while(incoming_table){
             
             //-----------------------------------------
@@ -299,6 +301,8 @@ int main(int argc, char *argv[])
         
         
          if(type_message == "DATA"){
+
+             std::cout << "Something recieved" <<std::endl;
           
           //----------------------------------------------------
           //                Parse Destination IP
@@ -355,7 +359,7 @@ int main(int argc, char *argv[])
         freeaddrinfo(servinfo);
          }
 
-         DV_table_B.print_table();
+        // DV_table_B.print_table();
     }
     
     // -----------------------------------------------------------
