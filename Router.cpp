@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
             }
             
         
-            if ((numbytes = sendto(sockfd, router_message.c_str(), router_message.length(), 0,
+            if ((numbytes = sendto(sockfd, DVT_mess.c_str(), DVT_mess.length(), 0,
                                    p->ai_addr, p->ai_addrlen)) == -1) {
                 perror("talker: sendto");
                 exit(1);
@@ -295,8 +295,8 @@ int main(int argc, char *argv[])
         std::cout <<"listener: packet contains " << buf << std::endl;
         std::cout << std::endl;
 
-    /*
-     
+    
+     /*
         //------------------------------------------------------------
         //                  Parsing the Message for Type
         //------------------------------------------------------------
@@ -332,11 +332,11 @@ int main(int argc, char *argv[])
             
             //-----------------------------------
             //           Source Port
-            //-----------------------------------
+            //----------------------------------A beej_client beej_server2 
 
-           int position_ctrl_A = recvd_message.find(":");
-            recvd_message.erase(0,position_ctrl_A+1);
-            int position_ctrl_B = recvd_message.find("\n");
+           int position_ctrl_A = recvd_message.fA beej_client beej_server2 nd(":");
+            recvd_message.erase(0,position_ctrl_A beej_client beej_server2 +1);
+            int position_ctrl_B = recvd_message.A beej_client beej_server2 ind("\n");
             std::string src_router_name = recvd_message.substr(0,position_ctrl_B);
             recvd_message.erase(0, position_ctrl_B);
 
@@ -469,9 +469,10 @@ int main(int argc, char *argv[])
         
         std::cout << "P->ai_adder: " << p->ai_addr << "   P->ai_addrelen: " << p->ai_addrlen << std::endl << std::endl;
         }
-        */
 
-        
+    DV_table.print_table(); // Print DVT table
+
+    */
 
            
             
