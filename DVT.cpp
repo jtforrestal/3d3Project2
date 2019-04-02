@@ -149,27 +149,27 @@ bool DVT::removeNode(std::string name){
 
 std::string DVT::make_packet(){
 
-    DVT_Entry *curr;
-    curr = top;
-    int port; // Message Port Number
-    int link;//message link cost
-    std::string dest; // message destination cost
-    std::string message = ""; //Final Message
+  //  DVT_Entry *curr;
+ //   curr = top;
+  //  int port; // Message Port Number
+  //  int link;//message link cost
+   // std::string dest; // message destination cost
+ //   std::string message = ""; //Final Message
 
-    while(curr != NULL){
+   // while(curr != NULL){
       //  std::cout << message << std::endl;
-        port =  curr->DVT_port;
-        link = curr->DVT_link_cost;
-        dest = curr->DVT_dest_name;
+    //    port =  curr->DVT_port;
+    //    link = curr->DVT_link_cost;
+    //    dest = curr->DVT_dest_name;
 
-        std::string link_string = std::to_string(link);
-        std::string port_string = std::to_string(port);
+  //      std::string link_string = std::to_string(link);
+     //   std::string port_string = std::to_string(port);
 
-        message = message + "TYPE:CTRL\nSrc_Port:"+Router_name+"\nPort_Name:" +dest +"\nPort_Cost:"+link_string+"\nPort_Number:"+ port_string +"\n";      
+        //message = message + "TYPE:CTRL\nSrc_Port:"+Router_name+"\nPort_Name:" +dest +"\nPort_Cost:"+link_string+"\nPort_Number:"+ port_string +"\n";      
 
-        curr =  curr->next_DVT;   
-    }
-        message = message + "TYPE:NULL";
+      //  message =  message + "Test";
+     //   curr =  curr->next_DVT;   
+   // };
+        std::string message = "Without table";
         return message;
-    
 }
