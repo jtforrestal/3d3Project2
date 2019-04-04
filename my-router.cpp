@@ -65,9 +65,11 @@ typedef std::pair<char, neighbour>  N_PAIR;     // <name, node>
 typedef std::pair<char, int>        DV_PAIR;    // <finaldest, totalcost>
 typedef std::pair<char, char*>      FT_PAIR;    // <finaldest, nextport>
 
-void bellmanford(char name, DV_MAP currDV, N_MAP* ntable);
-std::string dvtostring(DV_MAP newtable, std::string nodename);
-DV_MAP stringtodv(std::string message, char* srcnode);
+void bellmanford(char nodeX, N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable);
+bool dvupdate   (char nodeX, DV_MAP newtable, N_MAP *ntable);
+
+std::string dvtostring (DV_MAP newtable, std::string nodename);
+DV_MAP      stringtodv (std::string message, char* srcnode);
 
 int main(int argc, char *argv[])
 // eg
@@ -389,8 +391,25 @@ int main(int argc, char *argv[])
                 std::cout << std::endl;
 
 
-                // update local neighbour DVs...    (in neighbour table)
-                // update own DV & forward table... (bellman-ford)
+                // dv update returns 1 if there are changes made
+                // ...to our neighbour table distancevectors
+
+                if(dvupdate(source, recvdDVs, &neighbourtable)) {
+                    
+                    std::cout << "table updated! now need to perform bellman-ford...\n";
+                    
+                    // update own DV & forward table... (bellman-ford)
+
+                    //bellmanford(char nodeX, N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable);
+
+                    // FINISHED SESSION... ENDING NOTES
+                    // - if there are new nodes found in an update from a neighbour node
+                    // .... how do we pass them into the DV or FT?
+                    // .... -> how about, in the dvupdate(), add new nodes w/ MAXSIZE, NULL etc.
+                    // ....... -> if they're initialised already, they will be easy to update in BF
+
+                }
+                
 
             }
 
@@ -465,11 +484,11 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void bellmanford(char nodeX, DV_MAP currDV, N_MAP &ntable) {
+void bellmanford(char nodeX, N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
     
     // what if some of these are not found?
     
-    int currpathcost = currDV.find(nodeX)->second;
+    int currpathcost = currDV->find(nodeX)->second;
     
     int DvX;    // neighbour distance to nodeX
     int Cv;     // neighbour link cost
@@ -487,39 +506,69 @@ void bellmanford(char nodeX, DV_MAP currDV, N_MAP &ntable) {
         
         if( currpathcost > newpathcost ) { // update table
             
-            currDV.find(nodeX)->second = newpathcost;
-            // update forward table also!
+            currDV->find(nodeX)->second = newpathcost;
+            
+            // need to also update forward table!
+            // if we've just updated out DV from node itrN
+            // we want to add it's port to our forward table
+
+
         }
     }
 }
     
+// returns 0 if no updates are made
+
+bool dvupdate(char nodeX, DV_MAP newtable, N_MAP *ntable) {
     
-bool dvupdate(char nodeX, DV_MAP newtable, N_MAP &ntable) {
+    DV_MAP oldtable = ntable->find(nodeX)->second.distancevectors;
     
-    DV_MAP oldtable = ntable.find(nodeX)->second.distancevectors;
-    
-    char findest;
-    int  newdist;
+    char destnode;
+    int  newcost;
     
     DV_MAP::iterator itrDV;
+
+    bool updateflag = false; // any changes to our neighbour DVs?
     
     for (itrDV = newtable.begin(); itrDV != newtable.end(); ++itrDV) {
         
-        // if old entry, delete it
-        // insert updated entry
+        // if old entry, delete it and insert updated entry
         
-        findest = itrDV->first;
-        newdist = itrDV->second;
+        destnode = itrDV->first;
+        newcost = itrDV->second;
     
-        if(oldtable.count(findest) != 0) {
-            // if it's the same, do nothing.... if()
-            oldtable.erase(itrDV);
-        }
+        if(oldtable.count(destnode) != 0) {
+            // found entry for node X
             
-        oldtable.insert(DV_PAIR(findest, newdist));
+            if(oldtable.find(destnode)->second == newcost) {
+                continue; // duplicate entry, ignore
+            }
 
-        std::cout << "updated DV in " << nodeX << ":" << itrDV->first << " " << itrDV->first <<"\n";
+            std::cout << "erased neighb DV for " << nodeX << 
+            ":" << oldtable.find(destnode)->first << " " << 
+            oldtable.find(destnode)->second <<"\n";
+
+            // if different cost, erase current pair, replace: insert new pair
+            (ntable->find(nodeX)->second.distancevectors).erase(itrDV);
+        }
+
+        // if not found, or different cost entry found (and the old one erased)...
+        // insert new entry from data
+        (ntable->find(nodeX)->second.distancevectors).insert(DV_PAIR(destnode, newcost));
+
+        updateflag = true;
+
+        // debugging -> check it's actually updating the tables
+
+        std::cout << "ntable: updated DV for " << nodeX << 
+            ":" << destnode << " " << newcost <<"\n";
     }
+
+    if(!updateflag) {
+        std::cout << "ntable: no updates to DV for " << nodeX << std::endl;
+        return 0;
+    }
+
     return 1;
 }
 
