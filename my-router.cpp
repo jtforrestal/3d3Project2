@@ -23,6 +23,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <limits.h>
 
 #include <chrono>
 #include <future>
@@ -33,7 +34,7 @@
 
 //#define MYPORT "4900" -> passed as main() argument
 //#define DESTPEER "4951" // hardcoded for now...
-#define MAXBUFLEN 2048
+#define MAXBUFLEN   2048
 
 const int NEIGHBOUR_UPDATE_TIMEOUT = 5; // if no recv for 5s, ping neighbours
 
@@ -65,8 +66,8 @@ typedef std::pair<char, neighbour>  N_PAIR;     // <name, node>
 typedef std::pair<char, int>        DV_PAIR;    // <finaldest, totalcost>
 typedef std::pair<char, char*>      FT_PAIR;    // <finaldest, nextport>
 
-void bellmanford(char nodeX, N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable);
-bool dvupdate   (char nodeX, DV_MAP newtable, N_MAP *ntable);
+void bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable);
+bool dvupdate   (char thisnode, char nodeX, DV_MAP newtable, N_MAP *ntable, DV_MAP *owntable, FT_MAP *ftable);
 
 std::string dvtostring (DV_MAP newtable, std::string nodename);
 DV_MAP      stringtodv (std::string message, char* srcnode);
@@ -95,6 +96,9 @@ int main(int argc, char *argv[])
     //                      INITIALISATION
     // -----------------------------------------------------------
     
+
+
+
     std::ifstream inFile("graph.csv",std::ios::in);
     
     if(!inFile) { std::cout<< "Error:infile"; exit(EXIT_FAILURE);}
@@ -239,7 +243,7 @@ int main(int argc, char *argv[])
     
     for(;;) {
         
-        std::cout << nodename << ": waiting to recvfrom...\n";
+        std::cout << std::endl << nodename << ": waiting to recvfrom...\n";
         
         // -----------------------------------------------------------
         //                      PING/recvfrom() TIMEOUT
@@ -380,13 +384,14 @@ int main(int argc, char *argv[])
 
                 recvdDVs = stringtodv(recvd_message, &source);
 
-                // print out DV table
+                 // print out DV table
                 DV_MAP::iterator itrDV;
                 std::cout << "\nDV-table for " << source << ": \n\n";
                 std::cout << "Dest\tTot Cost\n";
                 for (itrDV = recvdDVs.begin(); itrDV != recvdDVs.end(); ++itrDV) {
-                    std::cout << itrDV->first
-                    << '\t' << itrDV->second << "\n";
+                    std::cout << itrDV->first;
+                    if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
+                    else std::cout << '\t' << itrDV->second << "\n";
                 }
                 std::cout << std::endl;
 
@@ -394,13 +399,13 @@ int main(int argc, char *argv[])
                 // dv update returns 1 if there are changes made
                 // ...to our neighbour table distancevectors
 
-                if(dvupdate(source, recvdDVs, &neighbourtable)) {
+                if(dvupdate(nodename[0], source, recvdDVs, &neighbourtable, &nodeDVs, &nodeFT)) {
                     
                     std::cout << "table updated! now need to perform bellman-ford...\n";
                     
                     // update own DV & forward table... (bellman-ford)
 
-                    //bellmanford(char nodeX, N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable);
+                    bellmanford(neighbourtable, &nodeDVs, &nodeFT);
 
                     // FINISHED SESSION... ENDING NOTES
                     // - if there are new nodes found in an update from a neighbour node
@@ -409,7 +414,26 @@ int main(int argc, char *argv[])
                     // ....... -> if they're initialised already, they will be easy to update in BF
 
                 }
-                
+
+                // print out DV table
+                //DV_MAP::iterator itrDV;
+                std::cout << "\nDV-table for " << source << ": \n\n";
+                std::cout << "Dest\tTot Cost\n";
+                for (itrDV = recvdDVs.begin(); itrDV != recvdDVs.end(); ++itrDV) {
+                    std::cout << itrDV->first;
+                    if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
+                    else std::cout << '\t' << itrDV->second << "\n";
+                }
+                std::cout << std::endl;
+
+                // printing FT
+                FT_MAP::iterator itrFT;
+                std::cout << "\nForward-table for " << nodename << ": \n\n";
+                std::cout << "\tNeigh\tPort\n";
+                for (itrFT = nodeFT.begin(); itrFT != nodeFT.end(); ++itrFT) {
+                    std::cout << '\t' << itrFT->first
+                    << '\t' << itrFT->second << "\n";
+                }                
 
             }
 
@@ -484,42 +508,55 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void bellmanford(char nodeX, N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
+void bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
     
-    // what if some of these are not found?
-    
-    int currpathcost = currDV->find(nodeX)->second;
-    
-    int DvX;    // neighbour distance to nodeX
-    int Cv;     // neighbour link cost
-    int newpathcost;
-    
-    N_MAP::iterator itrN;
-    
-    for (itrN = ntable.begin(); itrN != ntable.end(); ++itrN) {
 
-        // check neighbour's DV entry & link cost
-        DvX = (itrN->second.distancevectors).find(nodeX)->second;
-        Cv = itrN->second.cost;
+    // go through our DVs, check if there is a better cost found in our neighbour table
+
+    DV_MAP::iterator itrDV;
+
+    for(itrDV = currDV->begin(); itrDV != currDV->end(); ++itrDV) {
+
+        char nodeX = itrDV->first;
+
+        // what if some of these are not found?
         
-        newpathcost = Cv + DvX;
+        int currpathcost = currDV->find(nodeX)->second;
         
-        if( currpathcost > newpathcost ) { // update table
+        int DvX;    // neighbour distance to nodeX
+        int Cv;     // neighbour link cost
+        int newpathcost;
+        
+        N_MAP::iterator itrN;
+        
+        for (itrN = ntable.begin(); itrN != ntable.end(); ++itrN) {
+
+            // check neighbour's DV entry & link cost
+            DvX = (itrN->second.distancevectors).find(nodeX)->second;
+            Cv = itrN->second.cost;
             
-            currDV->find(nodeX)->second = newpathcost;
-            
-            // need to also update forward table!
-            // if we've just updated out DV from node itrN
-            // we want to add it's port to our forward table
+            newpathcost = Cv + DvX;
+            std::cout << "newpath cost: " << Cv << "+" << DvX << "=" << newpathcost << std::endl; 
+            std::cout << "BF for " << nodeX << ": current val: " << currpathcost << ", through " << itrN->first << ":" << newpathcost << std::endl;
+            if( currpathcost > newpathcost ) { // update table
+                
+                currDV->find(nodeX)->second = newpathcost;
+                std::cout << "updated!\n";
+                // need to also update forward table!
+                // if we've just updated out DV from node itrN
+                // we want to add it's port to our forward table
 
 
+            }
         }
+
     }
+
 }
     
 // returns 0 if no updates are made
 
-bool dvupdate(char nodeX, DV_MAP newtable, N_MAP *ntable) {
+bool dvupdate(char thisnode, char nodeX, DV_MAP newtable, N_MAP *ntable, DV_MAP *owntable, FT_MAP *ftable) {
     
     DV_MAP oldtable = ntable->find(nodeX)->second.distancevectors;
     
@@ -536,7 +573,23 @@ bool dvupdate(char nodeX, DV_MAP newtable, N_MAP *ntable) {
         
         destnode = itrDV->first;
         newcost = itrDV->second;
+
+
+    // is this a node we haven't seen before? 
+
+    if(destnode != thisnode) {
+
+        if(owntable->count(destnode) == 0) {
+            owntable->insert(DV_PAIR(destnode, INT_MAX));
+        }
+
+        if(ftable->count(destnode) == 0) {
+            ftable->insert(FT_PAIR(destnode, "n/a"));
+        }
+    }
     
+    // do we need to update our knowledge of nodeX's DVs ?
+
         if(oldtable.count(destnode) != 0) {
             // found entry for node X
             
