@@ -520,13 +520,13 @@ void bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
 
         char nodeX = itrDV->first; //This is the current Node we are moving through on our DV table
 
-        std::cout << "DV Map for: " << nodeX <<std::endl; //Print out
+        std::cout << "From this router, I want to go to: " << nodeX <<std::endl; //Print out
 
         // what if some of these are not found?
         
         int currpathcost = currDV->find(nodeX)->second; //Its current path cost from this router
 
-        std::cout <<"DV Current Path Cost: " << currpathcost << std::endl <<std::endl;
+        std::cout <<"Currently I can get to " << nodeX <<" with a cost of: " << currpathcost << std::endl <<std::endl;
         
         int DvX;    // neighbour distance to nodeX
         int Cv;     // neighbour link cost
@@ -538,29 +538,30 @@ void bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
         
         for (itrN = ntable.begin(); itrN != ntable.end(); ++itrN) {
 
-            std::cout << "itrN first: " << itrN->first <<std::endl;
+            std::cout << "Through my neighbour: " << itrN->first << " I want to go to: " << nodeX <<std::endl;
 
             // check neighbour's DV entry & link cost
             DvX = (itrN->second.distancevectors).find(nodeX)->second;
             Cv = itrN->second.cost;
 
-            std::cout << "DvX for itrN: " << DvX <<std::endl;
-            std::cout << "Cv for itrN: " << Cv << std::endl;
+            if(Cv !=0){
+            std::cout << "Ths cost for: " <<itrN->first << " to " << nodeX << " is:" << DvX <<std::endl;
+            std::cout << "The cost from this router to: " << itrN->first << " is " << Cv << std::endl;
             
             newpathcost = Cv + DvX;
             std::cout << "Newpath cost: " <<std::endl;
-            
+
             std::cout << "newpath cost: " << Cv << "+" << DvX << "=" << newpathcost << std::endl; 
             std::cout << "BF for " << nodeX << ": current val: " << currpathcost << ", through " << itrN->first << ":" << newpathcost << std::endl <<std::endl;
-            if( currpathcost > newpathcost ) { // update table
-                
-                currDV->find(nodeX)->second = newpathcost;
-                std::cout << "updated!\n";
-                // need to also update forward table!
-                // if we've just updated out DV from node itrN
-                // we want to add it's port to our forward table
+                if( currpathcost > newpathcost ) { // update table
+                    
+                    currDV->find(nodeX)->second = newpathcost;
+                    std::cout << "updated!\n";
+                    // need to also update forward table!
+                    // if we've just updated out DV from node itrN
+                    // we want to add it's port to our forward table
 
-
+                }
             }
         }
 
