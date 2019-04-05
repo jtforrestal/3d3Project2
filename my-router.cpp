@@ -514,30 +514,44 @@ void bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
     // go through our DVs, check if there is a better cost found in our neighbour table
 
     DV_MAP::iterator itrDV;
+    std::cout << "----------------------Bellman ford---------------------------------" << std::endl;
 
     for(itrDV = currDV->begin(); itrDV != currDV->end(); ++itrDV) {
 
-        char nodeX = itrDV->first;
+        char nodeX = itrDV->first; //This is the current Node we are moving through on our DV table
+
+        std::cout << "DV Map for: " << nodeX <<std::endl; //Print out
 
         // what if some of these are not found?
         
-        int currpathcost = currDV->find(nodeX)->second;
+        int currpathcost = currDV->find(nodeX)->second; //Its current path cost from this router
+
+        std::cout <<"DV Current Path Cost: " << currpathcost << std::endl <<std::endl;
         
         int DvX;    // neighbour distance to nodeX
         int Cv;     // neighbour link cost
         int newpathcost;
         
         N_MAP::iterator itrN;
+
+        std::cout <<"-----Neighhbour Table-------" <<std::endl;
         
         for (itrN = ntable.begin(); itrN != ntable.end(); ++itrN) {
+
+            std::cout << "itrN first: " << itrN->first <<std::endl;
 
             // check neighbour's DV entry & link cost
             DvX = (itrN->second.distancevectors).find(nodeX)->second;
             Cv = itrN->second.cost;
+
+            std::cout << "DvX for itrN: " << DvX <<std::endl;
+            std::cout << "Cv for itrN: " << Cv << std::endl;
             
             newpathcost = Cv + DvX;
+            std::cout << "Newpath cost: " <<std::endl;
+            
             std::cout << "newpath cost: " << Cv << "+" << DvX << "=" << newpathcost << std::endl; 
-            std::cout << "BF for " << nodeX << ": current val: " << currpathcost << ", through " << itrN->first << ":" << newpathcost << std::endl;
+            std::cout << "BF for " << nodeX << ": current val: " << currpathcost << ", through " << itrN->first << ":" << newpathcost << std::endl <<std::endl;
             if( currpathcost > newpathcost ) { // update table
                 
                 currDV->find(nodeX)->second = newpathcost;
@@ -551,7 +565,7 @@ void bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
         }
 
     }
-
+    std::cout << "----------------------End of Bellman ford---------------------------------" << std::endl;
 }
     
 // returns 0 if no updates are made
