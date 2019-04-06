@@ -23,6 +23,7 @@
 #include <map>
 
 #define MAXBUFLEN   2048
+#define DESTPEER "1001" // hardcoded for now...
 
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -33,7 +34,7 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int maint (int argc, char, *argv[]){
+int maint (int argc, char* argv[]){
 
   // -----------------------------------------------------------
   //                  SET UP LISTENING SOCKET
@@ -95,7 +96,7 @@ int maint (int argc, char, *argv[]){
   //              PING NEIGHBOURS WITH CURRENT TABLE:
   // -----------------------------------------------------------
 
-  if ((rv = getaddrinfo("localhost", 10001, &hints, &servinfo)) != 0) {
+  if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
       return 1;
   }
@@ -113,7 +114,7 @@ int maint (int argc, char, *argv[]){
       return 2;
   }
 
-  msg = "Type:DATA\nSrc_Node:H\nF,0\nHello World!\n"
+  std::string msg = "Type:DATA\nSrc_Node:H\nF,0\nHello World!\n"
   msg = msg +"Z,"
 
   if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
