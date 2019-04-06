@@ -43,9 +43,6 @@ int maint (int argc, char* argv[]){
 
       char    *nodename = argv[1];    // NAME OF NODE
       char    *nodeport = NULL;       // PORT OF NODE
-      DV_MAP  nodeDVs;                // NODE'S DISTANCE VECTOR TABLE <dests, distances>
-      FT_MAP  nodeFT;                 // NODE'S FORWARDING TABLE <dests, nextports>
-      N_MAP   neighbourtable;         // NODE'S NEIGHBOUR INFO <neighb, neighb-info>
 
 
 
