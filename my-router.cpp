@@ -303,6 +303,7 @@ int main(int argc, char *argv[])
                     }
                     break;
                 }
+
                 if (p == NULL) {
                     fprintf(stderr, "talker: failed to create socket\n");
                     return 2;
@@ -428,7 +429,6 @@ int main(int argc, char *argv[])
                 // printing FT
                 FT_MAP::iterator itrFT;
                 std::cout << "\nForward-table for " << nodename << ": \n\n";
-                //            for(p = servinfo; p != NULL; p = p->ai_next) {
                 std::cout << "\tNeigh\tPort\n";
                 for (itrFT = nodeFT.begin(); itrFT != nodeFT.end(); ++itrFT) {
                     std::cout << '\t' << itrFT->first
@@ -497,7 +497,7 @@ int main(int argc, char *argv[])
                        continue;
                    }
                    break;
-               
+
 
                if (p == NULL) {
                    fprintf(stderr, "talker: failed to create socket\n");
@@ -514,6 +514,36 @@ int main(int argc, char *argv[])
                }
 
             }
+            //
+            //            if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
+            //                fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+            //                return 1;
+            //            }
+            //            // loop through all the results and make a socket(unused?) -> get address
+            //            for(p = servinfo; p != NULL; p = p->ai_next) {
+            //                if (socket(p->ai_family, p->ai_socktype,
+            //                                     p->ai_protocol) == -1) {
+            //                    perror("talker: socket");
+            //                    continue;
+            //                }
+            //                break;
+            //            }
+            //
+            //            if (p == NULL) {
+            //                fprintf(stderr, "talker: failed to create socket\n");
+            //                return 2;
+            //            }
+            //
+            //            // sending from the current server socket...
+            //            // back to the address of server2
+            //
+            //            if ((numbytes = sendto(sockfd, buf, MAXBUFLEN-1, 0,
+            //                                   p->ai_addr, p->ai_addrlen)) == -1) {
+            //                perror("talker: sendto");
+            //                exit(1);
+            //            }
+
+
             // -----------------------------------------------------------
             //                  CTRL: UPDATE, SEND ON UPDATES
             // -----------------------------------------------------------
@@ -531,11 +561,11 @@ int main(int argc, char *argv[])
         //                      END LISTENING FOR LOOP
         // -----------------------------------------------------------
 
+    }
 
 
-
-    //freeaddrinfo(servinfo);
-    //close(sockfd);
+    freeaddrinfo(servinfo);
+    close(sockfd);
 
     return 0;
 }
@@ -765,4 +795,5 @@ DV_MAP stringtodv(std::string recvd_message, char* srcnode){
   //  std::cout << std::endl;
 
     return newtable;
-}
+
+  }
