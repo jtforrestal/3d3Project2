@@ -298,20 +298,20 @@ int main(int argc, char *argv[])
                 for(p = servinfo; p != NULL; p = p->ai_next) {
                     if (socket(p->ai_family, p->ai_socktype,
                                p->ai_protocol) == -1) {
-                        perror("talker: socket");
+                        perror("socket");
                         continue;
                     }
                     break;
                 }
             
                 if (p == NULL) {
-                    fprintf(stderr, "talker: failed to create socket\n");
+                    fprintf(stderr, "failed to create socket\n");
                     return 2;
                 }
             
                 if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
                                        p->ai_addr, p->ai_addrlen)) == -1) {
-                    perror("talker: sendto");
+                    perror("sendto");
                     exit(1);
                 }
                 
@@ -342,12 +342,12 @@ int main(int argc, char *argv[])
             //  CTRL - update table, ping neighbours with update
             //  DATA - lookup table, forward packet on
             
-            
-            std::cout << nodename << ": packet origin: " <<
-                   inet_ntop(their_addr.ss_family,
-                             get_in_addr((struct sockaddr *)&their_addr),
-                             s, sizeof s) << std::endl;
-            std::cout << nodename << ": packet length: " << (int)numbytes << "\n";
+            std::cout << "packet received!\n";
+            // std::cout << nodename << ": packet origin: " <<
+            //        inet_ntop(their_addr.ss_family,
+            //                  get_in_addr((struct sockaddr *)&their_addr),
+            //                  s, sizeof s) << std::endl;
+            // std::cout << nodename << ": packet length: " << (int)numbytes << "\n";
             buf[(int)numbytes] = '\0';
            // std::cout << nodename << ": message: \n" << buf << std::endl << std::endl;
             
@@ -381,19 +381,33 @@ int main(int argc, char *argv[])
 
                 char source;
                 DV_MAP recvdDVs;
+                
 
                 recvdDVs = stringtodv(recvd_message, &source);
+                std::cout << "update from " << source << std::endl;
 
-                 // print out DV table
-                DV_MAP::iterator itrDV;
-                std::cout << "\nDV-table for " << source << ": \n\n";
-                std::cout << "Dest\tTot Cost\n";
-                for (itrDV = recvdDVs.begin(); itrDV != recvdDVs.end(); ++itrDV) {
-                    std::cout << itrDV->first;
-                    if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
-                    else std::cout << '\t' << itrDV->second << "\n";
-                }
-                std::cout << std::endl;
+                //  // print out our current DV table
+                // DV_MAP::iterator itrDV;
+                // std::cout << "\ncurrent DV table" << ": \n\n";
+                // std::cout << "Dest\tTot Cost\n";
+                // for (itrDV = nodeDVs.begin(); itrDV != nodeDVs.end(); ++itrDV) {
+                //     std::cout << itrDV->first;
+                //     if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
+                //     else std::cout << '\t' << itrDV->second << "\n";
+                // }
+                // std::cout << std::endl;
+
+
+                 // print out received DV table
+                //DV_MAP::iterator itrDV;
+                // std::cout << "\nDV-table for " << source << ": \n\n";
+                // std::cout << "Dest\tTot Cost\n";
+                // for (itrDV = recvdDVs.begin(); itrDV != recvdDVs.end(); ++itrDV) {
+                //     std::cout << itrDV->first;
+                //     if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
+                //     else std::cout << '\t' << itrDV->second << "\n";
+                // }
+                // std::cout << std::endl;
 
 
                 // dv update returns 1 if there are changes made
@@ -401,11 +415,24 @@ int main(int argc, char *argv[])
 
                 if(dvupdate(nodename[0], source, recvdDVs, &neighbourtable, &nodeDVs, &nodeFT)) {
                     
-                    std::cout << "table updated! now need to perform bellman-ford...\n";
+
+                    
+                    //std::cout << "table updated! now need to perform bellman-ford...\n";
                     
                     // update own DV & forward table... (bellman-ford)
 
                     bellmanford(neighbourtable, &nodeDVs, &nodeFT);
+
+                    // print out our updated DV table
+                    //DV_MAP::iterator itrDV;
+                    std::cout << "\nupdated DV table" << ": \n\n";
+                    std::cout << "Dest\tTot Cost\n";
+                    for (itrDV = nodeDVs.begin(); itrDV != nodeDVs.end(); ++itrDV) {
+                        std::cout << itrDV->first;
+                        if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
+                        else std::cout << '\t' << itrDV->second << "\n";
+                    }
+                    std::cout << std::endl;
 
                     // FINISHED SESSION... ENDING NOTES
                     // - if there are new nodes found in an update from a neighbour node
@@ -415,25 +442,26 @@ int main(int argc, char *argv[])
 
                 }
 
-                // print out DV table
-                //DV_MAP::iterator itrDV;
-                std::cout << "\nDV-table for " << source << ": \n\n";
-                std::cout << "Dest\tTot Cost\n";
-                for (itrDV = recvdDVs.begin(); itrDV != recvdDVs.end(); ++itrDV) {
-                    std::cout << itrDV->first;
-                    if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
-                    else std::cout << '\t' << itrDV->second << "\n";
-                }
-                std::cout << std::endl;
+
+               // print out DV table
+                // DV_MAP::iterator itrDV;
+                // std::cout << "\nDV-table for " << source << ": \n\n";
+                // std::cout << "Dest\tTot Cost\n";
+                // for (itrDV = recvdDVs.begin(); itrDV != recvdDVs.end(); ++itrDV) {
+                //     std::cout << itrDV->first;
+                //     if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
+                //     else std::cout << '\t' << itrDV->second << "\n";
+                // }
+                // std::cout << std::endl;
 
                 // printing FT
-                FT_MAP::iterator itrFT;
-                std::cout << "\nForward-table for " << nodename << ": \n\n";
-                std::cout << "\tNeigh\tPort\n";
-                for (itrFT = nodeFT.begin(); itrFT != nodeFT.end(); ++itrFT) {
-                    std::cout << '\t' << itrFT->first
-                    << '\t' << itrFT->second << "\n";
-                }                
+                // FT_MAP::iterator itrFT;
+                // std::cout << "\nForward-table for " << nodename << ": \n\n";
+                // std::cout << "\tNeigh\tPort\n";
+                // for (itrFT = nodeFT.begin(); itrFT != nodeFT.end(); ++itrFT) {
+                //     std::cout << '\t' << itrFT->first
+                //     << '\t' << itrFT->second << "\n";
+                // }                
 
             }
 
@@ -462,7 +490,7 @@ int main(int argc, char *argv[])
             //                if (socket(p->ai_family, p->ai_socktype,
             //                                     p->ai_protocol) == -1) {
             //                    perror("talker: socket");
-            //                    continue;
+            //                    continue;                std::cout << std::endl;
             //                }
             //                break;
             //            }
@@ -485,7 +513,7 @@ int main(int argc, char *argv[])
             // -----------------------------------------------------------
             //                  CTRL: UPDATE, SEND ON UPDATES
             // -----------------------------------------------------------
-            
+                            std::cout << std::endl;
             
             
             
@@ -512,131 +540,160 @@ void bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
     
 
     // go through our DVs, check if there is a better cost found in our neighbour table
-
+    bool bfupdate = false;
     DV_MAP::iterator itrDV;
-    std::cout << "----------------------Bellman ford---------------------------------" << std::endl;
+    //std::cout << "----------------------Bellman ford---------------------------------" << std::endl;
 
     for(itrDV = currDV->begin(); itrDV != currDV->end(); ++itrDV) {
 
         char nodeX = itrDV->first; //This is the current Node we are moving through on our DV table
 
-        std::cout << "From this router, I want to go to: " << nodeX <<std::endl; //Print out
+        //std::cout << "From this router, I want to go to: " << nodeX <<std::endl; //Print out
 
         // what if some of these are not found?
         
         int currpathcost = currDV->find(nodeX)->second; //Its current path cost from this router
 
-        std::cout <<"Currently I can get to " << nodeX <<" with a cost of: " << currpathcost << std::endl <<std::endl;
+        //std::cout <<"Currently I can get to " << nodeX <<" with a cost of: " << currpathcost << std::endl <<std::endl;
         
         int DvX;    // neighbour distance to nodeX
         int Cv;     // neighbour link cost
         int newpathcost;
         
+        
+
         N_MAP::iterator itrN;
 
-        std::cout <<"-----Neighhbour Table-------" <<std::endl;
+        //std::cout <<"-----Neighhbour Table-------" <<std::endl;
         
         for (itrN = ntable.begin(); itrN != ntable.end(); ++itrN) {
 
-            std::cout << "Through my neighbour: " << itrN->first << " I want to go to: " << nodeX <<std::endl;
+            //std::cout << "Through my neighbour: " << itrN->first << " I want to go to: " << nodeX <<std::endl;
 
             // check neighbour's DV entry & link cost
             DvX = (itrN->second.distancevectors).find(nodeX)->second;
             Cv = itrN->second.cost;
 
-            if(Cv !=0){
-            std::cout << "Ths cost for: " <<itrN->first << " to " << nodeX << " is:" << DvX <<std::endl;
-            std::cout << "The cost from this router to: " << itrN->first << " is " << Cv << std::endl;
-            
-            newpathcost = Cv + DvX;
-            std::cout << "Newpath cost: " <<std::endl;
 
-            std::cout << "newpath cost: " << Cv << "+" << DvX << "=" << newpathcost << std::endl; 
-            std::cout << "BF for " << nodeX << ": current val: " << currpathcost << ", through " << itrN->first << ":" << newpathcost << std::endl <<std::endl;
+
+            if(DvX != 0){
+                //std::cout << "Ths cost for: " <<itrN->first << " to " << nodeX << " is:" << DvX <<std::endl;
+                //std::cout << "The cost from this router to: " << itrN->first << " is " << Cv << std::endl;
+                
+                newpathcost = Cv + DvX;
+
+                //std::cout << "newpath cost: " << Cv << "+" << DvX << "=" << newpathcost << std::endl; 
+                //std::cout << "BF for " << nodeX << ": current val: " << currpathcost << ", through " << itrN->first << ":" << newpathcost << std::endl <<std::endl;
+                
                 if( currpathcost > newpathcost ) { // update table
-                    
-                    currDV->find(nodeX)->second = newpathcost;
-                    std::cout << "updated!\n";
-                    // need to also update forward table!
-                    // if we've just updated out DV from node itrN
-                    // we want to add it's port to our forward table
+                        
+                        currDV->find(nodeX)->second = newpathcost;
+                        bfupdate = true;
+                        //std::cout << "bf: updated dvs!\n";
+                        // need to also update forward table!
+                        // if we've just updated out DV from node itrN
+                        // we want to add it's port to our forward table
 
-                }
-            }
+                    }
+                //else std::cout << "bf: no update dvs";
+             }
         }
 
     }
-    std::cout << "----------------------End of Bellman ford---------------------------------" << std::endl;
+    if(bfupdate) std::cout << "bf update!\n";
+    else std::cout << "no bf update!\n";
+    //std::cout << "----------------------End of Bellman ford---------------------------------" << std::endl;
 }
     
 // returns 0 if no updates are made
 
 bool dvupdate(char thisnode, char nodeX, DV_MAP newtable, N_MAP *ntable, DV_MAP *owntable, FT_MAP *ftable) {
     
+    //std::cout << "\ndvupdate debug section\n";
+
     DV_MAP oldtable = ntable->find(nodeX)->second.distancevectors;
     
     char destnode;
     int  newcost;
     
-    DV_MAP::iterator itrDV;
+    
 
     bool updateflag = false; // any changes to our neighbour DVs?
     
+    DV_MAP::iterator itrDV;
+    
     for (itrDV = newtable.begin(); itrDV != newtable.end(); ++itrDV) {
         
+        //if(itrDV == newtable.begin()) std::cout << "start of table!";
+        //if(itrDV == newtable.end()) std::cout << "end of table!";
+        
+        //std::cout << " end of table: " << newtable.end()->first << std::endl;
         // if old entry, delete it and insert updated entry
         
         destnode = itrDV->first;
         newcost = itrDV->second;
-
+        //std::cout << "  checking entry..." << destnode << std::endl;
 
     // is this a node we haven't seen before? 
 
     if(destnode != thisnode) {
+        //std::cout << "  checking if node is not in owntable..." <<std::endl;
 
         if(owntable->count(destnode) == 0) {
+            //std::cout << "      adding to table " <<std::endl;
+
             owntable->insert(DV_PAIR(destnode, INT_MAX));
         }
 
         if(ftable->count(destnode) == 0) {
+            //std::cout << "      adding to forwarding table..." <<std::endl;
             ftable->insert(FT_PAIR(destnode, "n/a"));
         }
     }
     
     // do we need to update our knowledge of nodeX's DVs ?
-
         if(oldtable.count(destnode) != 0) {
-            // found entry for node X
             
+            // found entry for node X
+
             if(oldtable.find(destnode)->second == newcost) {
-                continue; // duplicate entry, ignore
+                // duplicate entry, ignore
+              //  std::cout << itrDV->first;
+                //std::cout << " end of table: " << newtable.end()->first << std::endl;
+                //std::cout <<"       Continue" <<std::endl;
+                continue; 
             }
 
-            std::cout << "erased neighb DV for " << nodeX << 
-            ":" << oldtable.find(destnode)->first << " " << 
-            oldtable.find(destnode)->second <<"\n";
-
+            //std::cout << "erased neighb DV for " << nodeX << 
+            //":" << oldtable.find(destnode)->first << " " << 
+            //oldtable.find(destnode)->second <<"\n";
+            
             // if different cost, erase current pair, replace: insert new pair
-            (ntable->find(nodeX)->second.distancevectors).erase(itrDV);
+            //(ntable->find(nodeX)->second.distancevectors).erase(itrDV);
+            // change the cost entry of the current node, bsaed on the update
+            std::cout <<"updated node in neighbour table:"<< nodeX << std::endl;
+            (ntable->find(nodeX)->second.distancevectors).find(destnode)->second = newcost;
         }
-
+        else {
         // if not found, or different cost entry found (and the old one erased)...
         // insert new entry from data
+        //std::cout <<" adding new node" <<std::endl;
         (ntable->find(nodeX)->second.distancevectors).insert(DV_PAIR(destnode, newcost));
 
         updateflag = true;
 
         // debugging -> check it's actually updating the tables
 
-        std::cout << "ntable: updated DV for " << nodeX << 
-            ":" << destnode << " " << newcost <<"\n";
+        //std::cout << "ntable: updated DV for " << nodeX << 
+        //   ":" << destnode << " " << newcost <<"\n";
+        }
     }
 
     if(!updateflag) {
-        std::cout << "ntable: no updates to DV for " << nodeX << std::endl;
+        std::cout << "dvtable(): no updates to DV for " << nodeX << std::endl;
         return 0;
     }
-
+    //std::cout << "returning 1"<<std::endl;
     return 1;
 }
 
