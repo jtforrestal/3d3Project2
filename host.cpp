@@ -36,6 +36,19 @@ void *get_in_addr(struct sockaddr *sa)
 
 int maint (int argc, char* argv[]){
 
+      // -----------------------------------------------------------
+      //                  IMPORTANT NODE VARIABLES
+      // -----------------------------------------------------------
+
+
+      char    *nodename = argv[1];    // NAME OF NODE
+      char    *nodeport = NULL;       // PORT OF NODE
+      DV_MAP  nodeDVs;                // NODE'S DISTANCE VECTOR TABLE <dests, distances>
+      FT_MAP  nodeFT;                 // NODE'S FORWARDING TABLE <dests, nextports>
+      N_MAP   neighbourtable;         // NODE'S NEIGHBOUR INFO <neighb, neighb-info>
+
+
+
   // -----------------------------------------------------------
   //                  SET UP LISTENING SOCKET
   // -----------------------------------------------------------
@@ -114,8 +127,8 @@ int maint (int argc, char* argv[]){
       return 2;
   }
 
-  std::string msg = "Type:DATA\nSrc_Node:H\nF,0\nHello World!\n"
-  msg = msg +"Z,"
+  std::string msg = "Type:DATA\nSrc_Node:H\nF,0\nHello World!\n";
+  msg = msg +"Z,";
 
   if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
                          p->ai_addr, p->ai_addrlen)) == -1) {
