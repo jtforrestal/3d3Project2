@@ -349,7 +349,7 @@ int main(int argc, char *argv[])
                              s, sizeof s) << std::endl;
             std::cout << nodename << ": packet length: " << (int)numbytes << "\n";
             buf[(int)numbytes] = '\0';
-            cout << "What?"<<"\n";
+            std::cout << "What?"<<"\n";
            // std::cout << nodename << ": message: \n" << buf << std::endl << std::endl;
 
 
