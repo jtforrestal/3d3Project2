@@ -369,7 +369,7 @@ int main(int argc, char *argv[])
             int position_2 = recvd_message.find("\n");
             std::string type_message = recvd_message.substr(0,position_2); //Make a substring called type_message that stores either "CTRL" or "DATA" depending on the packet
             //std::cout << "Type: " << type_message << std::endl; //Print out to the Screen
-            std::cout << "Message type is "<< type_message << endl;
+            std::cout << "Message type is "<< type_message << std::endl;
             //Extract the body of the message
             recvd_message = recvd_message.erase(0, position_2+1); //Remove the Type of message header from the string
 
