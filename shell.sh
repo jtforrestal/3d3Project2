@@ -1,3 +1,9 @@
+rm routing-outputA.txt
+rm routing-outputB.txt
+rm routing-outputC.txt
+rm routing-outputD.txt
+rm routing-outputE.txt
+rm routing-outputF.txt
 
 make
 xterm -title "Router A 10000" -hold -e "./my-router A" &
