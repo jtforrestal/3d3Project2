@@ -531,7 +531,7 @@ int main(int argc, char *argv[])
         //                      END LISTENING FOR LOOP
         // -----------------------------------------------------------
 
-    }
+    
 
 
     //freeaddrinfo(servinfo);
