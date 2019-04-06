@@ -534,8 +534,8 @@ int main(int argc, char *argv[])
     }
 
 
-    freeaddrinfo(servinfo);
-    close(sockfd);
+    //freeaddrinfo(servinfo);
+    //close(sockfd);
 
     return 0;
 }
