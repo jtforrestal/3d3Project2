@@ -451,7 +451,7 @@ int main(int argc, char *argv[])
             // now use socket()...
             //  -> to get the address we need: [p->ai_addr, p->ai_addrlen]
             if(type_message == "DATA"){
-              std::cout<< "WE made it to DATA"<< endl;
+              std::cout<< "WE made it to DATA"<< std::endl;
               //--------------------------------------
               //     Initial Source of packet
               //--------------------------------------
