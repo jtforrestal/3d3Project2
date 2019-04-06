@@ -23,7 +23,7 @@
 #include <map>
 
 #define MAXBUFLEN   2048
-#define DESTPEER "1001" // hardcoded for now...
+#define DESTPEER "10001" // hardcoded for now...
 
 void *get_in_addr(struct sockaddr *sa)
 {
