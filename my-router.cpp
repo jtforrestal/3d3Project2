@@ -482,7 +482,7 @@ int main(int argc, char *argv[])
                 std::string next_hop;
 
                 for (itrFT = nodeFT.begin(); itrFT != nodeFT.end(); ++itrFT) {
-                    if(itrFT->first == "destname"){
+                    if(itrFT->first == destname){
                       next_hop = itrFT->second;
                     }
                 }
