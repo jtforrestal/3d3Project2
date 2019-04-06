@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
 
 
         // if...
-        // (timeout)
+        // (timeout)https://en.wikipedia.org/wiki/Select_%28Unix%29
         
         if(fut.wait_for(span)==std::future_status::timeout)
         {
