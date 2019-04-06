@@ -365,12 +365,12 @@ int main(int argc, char *argv[])
             //Extract the type of message, this removes the "Type:" from the recvd_message
             int position_1 = recvd_message.find(":");
             recvd_message.erase(0,position_1+1);
-
+            std::cout <<
             //In the new code, the find function will search for a new line "\n" however for testing, I am using a ":" in the message
             int position_2 = recvd_message.find("\n");
             std::string type_message = recvd_message.substr(0,position_2); //Make a substring called type_message that stores either "CTRL" or "DATA" depending on the packet
             //std::cout << "Type: " << type_message << std::endl; //Print out to the Screen
-
+            std::cout << "Message type is " type_message << endl;
             //Extract the body of the message
             recvd_message = recvd_message.erase(0, position_2+1); //Remove the Type of message header from the string
 

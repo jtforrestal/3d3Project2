@@ -126,7 +126,7 @@ int main (int argc, char* argv[]){
 
   std::string msg = "Type:DATA\nSrc_Node:H\nF,0\nHello World!\n";
   msg = msg +"Z,";
-
+  cout << msg << endl; 
   if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
                          p->ai_addr, p->ai_addrlen)) == -1) {
       perror("talker: sendto");
