@@ -33,7 +33,7 @@
 #include <map>
 
 //#define MYPORT "4900" -> passed as main() argument
-//#define DESTPEER "4951" // hardcoded for now...
+#define DESTPEER "4951" // hardcoded for now...
 #define MAXBUFLEN   2048
 
 const int NEIGHBOUR_UPDATE_TIMEOUT = 5; // if no recv for 5s, ping neighbours
@@ -689,8 +689,8 @@ bool dvupdate(char thisnode, char nodeX, DV_MAP newtable, N_MAP *ntable, DV_MAP 
 
         // debugging -> check it's actually updating the tables
 
-        std::cout << "ntable: updated DV for " << nodeX <<
-            ":" << destnode << " " << newcost <<"\n";
+        //std::cout << "ntable: updated DV for " << nodeX <<
+          //  ":" << destnode << " " << newcost <<"\n";
     }
 
     if(!updateflag) {
