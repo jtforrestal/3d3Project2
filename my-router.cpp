@@ -484,8 +484,8 @@ int main(int argc, char *argv[])
                       next_hop = itrFT->second;
                     }
                 }
-                  cout<< recvd_message<< endl;  // output what is left of the packet
-                  recvd_message = "Type:DATA\nSrc_Node:"+srcname+"\n"+destname+":"+totalcost+recvd_message
+                  std::cout<< recvd_message<< "\n";  // output what is left of the packet
+                  recvd_message = "Type:DATA\nSrc_Node:"+ srcname +"\n" + destname + ":" +totalcost + recvd_message;
                 if ((rv = getaddrinfo("localhost", next_hop, &hints, &servinfo)) != 0) {
                    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
                    return 1;
