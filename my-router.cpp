@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
 
             //The data that is recived in the buffer gets stored in string recvd_message
             std::string recvd_message = buf;
-
+            std::cout << " The Recv is " << recvd_message<< "\n";
             //Extract the type of message, this removes the "Type:" from the recvd_message
             int position_1 = recvd_message.find(":");
             recvd_message.erase(0,position_1+1);
