@@ -42,7 +42,7 @@ int main (int argc, char* argv[]){
 
 
       char    *nodename = argv[1];    // NAME OF NODE
-      char    *nodeport = NULL;       // PORT OF NODE
+      char    *nodeport = "10010";       // PORT OF NODE
 
 
 
