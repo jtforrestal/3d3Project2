@@ -348,8 +348,9 @@ int main(int argc, char *argv[])
                              get_in_addr((struct sockaddr *)&their_addr),
                              s, sizeof s) << std::endl;
             std::cout << nodename << ": packet length: " << (int)numbytes << "\n";
+            std::cout << "Top"<<"\n";
             buf[(int)numbytes] = '\0';
-            std::cout << "What?"<<"\n";
+            std::cout << "Bottom"<<"\n";
            // std::cout << nodename << ": message: \n" << buf << std::endl << std::endl;
 
 
