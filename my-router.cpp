@@ -497,7 +497,7 @@ int main(int argc, char *argv[])
                        continue;
                    }
                    break;
-               }
+               
 
                if (p == NULL) {
                    fprintf(stderr, "talker: failed to create socket\n");
@@ -531,7 +531,7 @@ int main(int argc, char *argv[])
         //                      END LISTENING FOR LOOP
         // -----------------------------------------------------------
 
-    
+
 
 
     //freeaddrinfo(servinfo);
