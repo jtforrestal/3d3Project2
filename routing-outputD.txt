@@ -1,17 +1,5 @@
-
-
-Initial Forwarding Table for D: 
-
--------------------------------------------------------------------
-
-Destination | 	Cost | 	Outgoing UDP Port | Destination UDP Port |
-
-		C		4		10003( Node D )		10002( Node C )	
-		F		3		10003( Node D )		10005( Node F )	
-
--------------------------------------------------------------------
 Initial Routing Table
-Sun Apr  7 03:32:35 2019
+Sun Apr  7 04:35:43 2019
 
 DV-table for D
 ___________________________________
@@ -20,16 +8,6 @@ Destination |	C	F
 Cost        |	4	3
 ___________________________________
 
-Sun Apr  7 03:32:35 2019
-
-
-Updated DV-table for D: 
-
-___________________________________
-
-Destination |	B	C	E	F
-Cost        |	4	4	6	3
-___________________________________
 
 Updated Forwarding Table
 -------------------------------------------------------------------
@@ -42,3 +20,334 @@ Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
 	F			3		10003( Node D )			10005	
 
 -------------------------------------------------------------------
+Updated Forwarding Table
+-------------------------------------------------------------------
+
+Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
+
+	B	4		10003( Node D )		10005	
+	C	4		10003( Node D )		10002	
+	E	6		10003( Node D )		10005	
+	F	3		10003( Node D )		10005	
+
+-------------------------------------------------------------------
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	B	C	E	F
+Cost        |	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	B	C	E	F
+Cost        |	4	4	6	3
+___________________________________
+
+
+Updated Forwarding Table
+-------------------------------------------------------------------
+
+Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
+
+	A			11		10003( Node D )			10002	
+	B			4		10003( Node D )			10005	
+	C			4		10003( Node D )			10002	
+	E			6		10003( Node D )			10005	
+	F			3		10003( Node D )			10005	
+
+-------------------------------------------------------------------
+Updated Forwarding Table
+-------------------------------------------------------------------
+
+Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
+
+	A	11		10003( Node D )		10002	
+	B	4		10003( Node D )		10005	
+	C	4		10003( Node D )		10002	
+	E	6		10003( Node D )		10005	
+	F	3		10003( Node D )		10005	
+
+-------------------------------------------------------------------
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	11	4	4	6	3
+___________________________________
+
+
+Updated Forwarding Table
+-------------------------------------------------------------------
+
+Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
+
+	A			8		10003( Node D )			10005	
+	B			4		10003( Node D )			10005	
+	C			4		10003( Node D )			10002	
+	E			6		10003( Node D )			10005	
+	F			3		10003( Node D )			10005	
+
+-------------------------------------------------------------------
+Updated Forwarding Table
+-------------------------------------------------------------------
+
+Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
+
+	A	8		10003( Node D )		10005	
+	B	4		10003( Node D )		10005	
+	C	4		10003( Node D )		10002	
+	E	6		10003( Node D )		10005	
+	F	3		10003( Node D )		10005	
+
+-------------------------------------------------------------------
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
+Initial Routing Table
+Sun Apr  7 04:35:43 2019
+
+DV-table for D
+___________________________________
+
+Destination |	A	B	C	E	F
+Cost        |	8	4	4	6	3
+___________________________________
+
