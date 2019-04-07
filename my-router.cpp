@@ -621,7 +621,7 @@ int main(int argc, char *argv[])
                 //--------------------------------------
                 //     Initial Source of packet
                 //--------------------------------------
-
+                std::cout <<std::endl << "Data Packet Recieved" << std::endl;
                 int position_ctrl_A = recvd_message.find(":");
                 recvd_message.erase(0,position_ctrl_A+1);
                 int position_ctrl_B = recvd_message.find("\n");
@@ -630,7 +630,7 @@ int main(int argc, char *argv[])
 
                 std::string srcname = src_router_name; // char* = string ??? may need to c_str() or index [0]
 
-                std::cout << "parsed source: " << srcname << std::endl;
+                std::cout << "Parsed source: " << srcname << std::endl;
 
                 //--------------------------------------
                 //     Final Destination Router Name
@@ -644,48 +644,55 @@ int main(int argc, char *argv[])
 
                 std::string destname = dest_router_name; // char* = string ??? may need to c_str() or index [0]
 
-                std::cout << "parsed destination: " << destname << std::endl;
+                std::cout << "Message Recieved for Destination to: " << destname << std::endl;
+                  if(destname == nodename){
+                      std::cout << std::endl << "Message Recieved!"<<std::endl;
+                      std::cout<< "message:\n" << recvd_message << "\n";  // output what is left of the packet
 
+                  }
+                else{
+                    std::cout<< "Message: " << recvd_message << "\n";  // output what is left of the packet
+                    //-----------------------------------------------------------
+                    //                  Forwarding
+                    //-----------------------------------------------------------
+                    // lookup next hop port in the forward table
+                    std::string nexthop_port = nodeFT.find(destname[0])->second;
 
+                    std::cout << std::endl << "Forwarding to Node: " << nodeFT.find(destname[0])->first <<std::endl;
 
-                std::cout<< "message:\n" << recvd_message << "\n";  // output what is left of the packet
+                    msg = "Type:DATA\nSrc_Router:" + srcname + "\nDest_Node:" + destname +"\n"+ recvd_message;
+                    std::cout << "Next hop port: " << nexthop_port << std::endl << std::endl;
+                    std::cout << "Message sent: "  << std::endl << msg << std::endl;
 
-
-                // lookup next hop port in the forward table
-                std::string nexthop_port = nodeFT.find(destname[0])->second;
-
-                msg = "Type:DATA\nSrc_Node:"+ srcname +"\nSrc_Node:" + destname +"\n"+ recvd_message;
-                std::cout << "next hop port: " << nexthop_port << std::endl << std::endl;
-                std::cout << "message sent: "  << std::endl << msg << std::endl;
-
-    
-                // create address using port from FT...
-                if ((rv = getaddrinfo("localhost", nexthop_port.c_str(), &hints, &servinfo)) != 0) {
-                    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-                    return 1;
-                }
-
-                // loop through all the results and make a socket(unused?) -> get address
-                for(p = servinfo; p != NULL; p = p->ai_next) {
-                    if (socket(p->ai_family, p->ai_socktype,
-                                        p->ai_protocol) == -1) {
-                        perror("socket");
-                        continue;                std::cout << std::endl;
+        
+                    // create address using port from FT...
+                    if ((rv = getaddrinfo("localhost", nexthop_port.c_str(), &hints, &servinfo)) != 0) {
+                        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+                        return 1;
                     }
-                    break;
-                }
-    
-                if (p == NULL) {
-                    fprintf(stderr, "failed to create socket\n");
-                    return 2;
-                }
-    
-                // send msg...
-    
-                if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
-                                                p->ai_addr, p->ai_addrlen)) == -1) {
-                    perror("sendto");
-                    exit(1);
+
+                    // loop through all the results and make a socket(unused?) -> get address
+                    for(p = servinfo; p != NULL; p = p->ai_next) {
+                        if (socket(p->ai_family, p->ai_socktype,
+                                            p->ai_protocol) == -1) {
+                            perror("socket");
+                            continue;                std::cout << std::endl;
+                        }
+                        break;
+                    }
+        
+                    if (p == NULL) {
+                        fprintf(stderr, "failed to create socket\n");
+                        return 2;
+                    }
+        
+                    // send msg...
+        
+                    if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
+                                                    p->ai_addr, p->ai_addrlen)) == -1) {
+                        perror("sendto");
+                        exit(1);
+                    }
                 }
             
             }

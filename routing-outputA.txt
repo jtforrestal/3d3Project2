@@ -1,0 +1,45 @@
+
+
+DV-table for A: 
+
+
+Dest	Tot Cost
+B
+	4
+E
+	1
+
+Sun Apr  7 03:20:06 2019
+
+
+DV-table for A: 
+
+
+Destination | 	Total Cost | 	Outgoing UDP port | 	Destination UDP port | 
+	B				4
+
+	C				6
+
+	D				8
+
+	E				1
+
+	F				5
+
+
+
+
+Forward-table for A: 
+
+
+	Neigh	Port
+
+	B	10001
+
+	C	10001
+
+	D	10001
+
+	E	10004
+
+	F	10001

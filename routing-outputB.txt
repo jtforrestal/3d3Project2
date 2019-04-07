@@ -13,7 +13,7 @@ E
 F
 	1
 
-Sun Apr  7 01:45:52 2019
+Sun Apr  7 03:20:06 2019
 
 
 DV-table for B: 
@@ -22,7 +22,9 @@ DV-table for B:
 Destination | 	Total Cost | 	Outgoing UDP port | 	Destination UDP port | 
 	A				4
 
-	C				3
+	C				2
+
+	D				4
 
 	E				2
 
@@ -38,7 +40,9 @@ Forward-table for B:
 
 	A	10000
 
-	C	10002
+	C	10005
+
+	D	10005
 
 	E	10004
 

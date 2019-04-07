@@ -23,7 +23,7 @@
 #include <map>
 
 #define MAXBUFLEN   2048
-#define DESTPEER "10000" // hardcoded for now...
+ // hardcoded for now...
 
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -33,8 +33,8 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int main (int argc, char* argv[]){
-
+int main (int argc, char* argv[]){  
+  
     // -----------------------------------------------------------
     //                  IMPORTANT NODE VARIABLES
     // -----------------------------------------------------------
@@ -108,7 +108,7 @@ int main (int argc, char* argv[]){
     //                    SEND MESSAGE:
     // -----------------------------------------------------------
 
-    if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
+    if ((rv = getaddrinfo("localhost", argv[1], &hints, &servinfo)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         return 1;
     }
@@ -125,13 +125,11 @@ int main (int argc, char* argv[]){
         fprintf(stderr, "talker: failed to create socket\n");
         return 2;
     }
-    
-    std::string srcname = "H";
-    std::string destname = "D";
-    std::string data = "hello world!";
-    std::string msg = "Type:DATA\nSrc_Node:"+ srcname +"\nDest_Node:" + destname +"\n"+ data;
-    //std::string msg = "Type:DATA\nSrc_Node:H\nDest_Node:F\nHello World!\n";
-    //msg = msg +"Z,";
+    std::string Src_Router = argv[1];
+    std::string destname = argv[2];
+    std::string data = argv[3];
+
+    std::string msg = "Type:DATA\nSrc_Router: "+ Src_Router +"\nDest_Node:" + destname +"\n"+ data;
     std::cout << "sent:\n" << msg << std::endl;
 
     if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
