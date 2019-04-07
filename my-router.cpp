@@ -19,6 +19,8 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <assert.h>
+#include <time.h> 
+#include <cstdbool>
 
 #include <string>
 #include <fstream>
@@ -68,9 +70,14 @@ typedef std::pair<char, char*>      FT_PAIR;    // <finaldest, nextport>
 
 bool bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable);
 bool dvupdate   (char thisnode, char nodeX, DV_MAP newtable, N_MAP *ntable, DV_MAP *owntable, FT_MAP *ftable);
+//bool is_file_exist(std::string fileName);
 
 std::string dvtostring (DV_MAP newtable, std::string nodename);
 DV_MAP      stringtodv (std::string message, char* srcnode);
+
+
+time_t my_time = time(NULL);
+
 
 int main(int argc, char *argv[])
 // eg
@@ -95,8 +102,6 @@ int main(int argc, char *argv[])
     // -----------------------------------------------------------
     //                      INITIALISATION
     // -----------------------------------------------------------
-    
-
 
 
     std::ifstream inFile("graph.csv",std::ios::in);
@@ -110,6 +115,7 @@ int main(int argc, char *argv[])
     int   linkCost;
     
     bool flag = 1;
+
     
     while(inFile.good()){
         
@@ -147,6 +153,37 @@ int main(int argc, char *argv[])
     }
     
     assert(nodeport!=NULL); // ensure nodeport is initialised
+
+
+    // open up write file
+
+   // std::string src(1, nodename);
+
+    std::string fileName = "";
+                fileName +="routing-output";
+                fileName += nodename;
+                fileName += ".txt";
+    
+
+    // std::string src(1, nodename);
+    // std::string newFileName=" ";
+    //             newFileName +="newFile";
+    //             newFileName +=src;
+
+    std::fstream newFileName;
+
+    newFileName.open(fileName, std::ios::out);
+    //std::ofstream newFile(fileName);
+
+    //if(is_file_exist(fileName)==true){
+                
+    //newFile.open(fileName, std::ios::out);
+    //newFile<<"enter file.";
+    //assert(fileName.is_open());
+
+    std::cout << "file is now open.. now writing...\n";
+                
+
     
     // -----------------------------------------------------------
     //                 PRINT INITIAL NODE STATE
@@ -155,18 +192,18 @@ int main(int argc, char *argv[])
     
     // printing neighbours
     N_MAP::iterator itrN;
-    std::cout << "\nNeighbour-table for " << nodename << ": \n\n";
-    std::cout << "\tNeigh\tCost\tPort\tNeighDV\n";
+    std::cout<<std::endl << "\nNeighbour-table for " << nodename << ": \n\n";
+    std::cout<<std::endl << "\tNeigh\tCost\tPort\tNeighDV\n";
     for (itrN = neighbourtable.begin(); itrN != neighbourtable.end(); ++itrN) {
-        std::cout << '\t' << itrN->first
+        std::cout<<std::endl << '\t' << itrN->first
         << '\t' << itrN->second.cost << '\t'<< itrN->second.port << '\t' << "n/a" << "\n\n";
     }
     // printing FT
     FT_MAP::iterator itrFT;
-    std::cout << "\nForward-table for " << nodename << ": \n\n";
-    std::cout << "\tNeigh\tPort\n";
+    std::cout<<std::endl << "\nForward-table for " << nodename << ": \n\n";
+    std::cout<<std::endl << "\tNeigh\tPort\n";
     for (itrFT = nodeFT.begin(); itrFT != nodeFT.end(); ++itrFT) {
-        std::cout << '\t' << itrFT->first
+        std::cout<<std::endl << '\t' << itrFT->first
         << '\t' << itrFT->second << "\n\n";
     }
     
@@ -183,6 +220,10 @@ int main(int argc, char *argv[])
     struct sockaddr_storage their_addr;
     char buf[MAXBUFLEN];
     socklen_t addr_len;
+
+    std::string msg;
+    std::string srcname;
+
     char s[INET6_ADDRSTRLEN];
     
     memset(&hints, 0, sizeof hints);
@@ -243,7 +284,7 @@ int main(int argc, char *argv[])
     
     for(;;) {
         
-        std::cout << std::endl << nodename << ": waiting to recvfrom...\n";
+        std::cout<<std::endl << std::endl << nodename << ": waiting to recvfrom...\n";
         
         // -----------------------------------------------------------
         //                      PING/recvfrom() TIMEOUT
@@ -261,11 +302,11 @@ int main(int argc, char *argv[])
 
 
         // if...
-        // (timeout)
+        // (timeout)https://en.wikipedia.org/wiki/Select_%28Unix%29
         
         if(fut.wait_for(span)==std::future_status::timeout)
         {
-            std::cout << nodename << ": recvfrom() timeout! pinging neighbours...\n\n";
+            std::cout<<std::endl << nodename << ": recvfrom() timeout! pinging neighbours...\n\n";
             
             
             
@@ -273,13 +314,13 @@ int main(int argc, char *argv[])
             //              PING NEIGHBOURS WITH CURRENT TABLE:
             // -----------------------------------------------------------
             
-            std::cout << "Sent message to";
+            std::cout<<std::endl << "updated neighbours ";
             
             //std::string ping_msg = "DV update";
 
-            std::string msg =dvtostring(nodeDVs,nodename);
+            msg = dvtostring(nodeDVs,nodename);
 
-            //std::cout <<"Message = " << mess <<std::endl;
+            //std::cout<<std::endl <<"Message = " << mess <<std::endl;
 //            std::string ping_msg = s + " TYPE:CTRL " + itrN->first + " on port: " + itrN->second.port + '\n';
 
             
@@ -319,7 +360,7 @@ int main(int argc, char *argv[])
                 
             } // updated all neighbours
             
-            //std::cout << ":\n" << ping_msg << "\n\n";
+            std::cout<<std::endl;   // << ":\n" << ping_msg << "\n\n";
             
             continue;
         }
@@ -349,7 +390,7 @@ int main(int argc, char *argv[])
             //                  s, sizeof s) << std::endl;
             // std::cout << nodename << ": packet length: " << (int)numbytes << "\n";
             buf[(int)numbytes] = '\0';
-           // std::cout << nodename << ": message: \n" << buf << std::endl << std::endl;
+           // std::cout<<std::endl << nodename << ": message: \n" << buf << std::endl << std::endl;
             
 
 
@@ -369,17 +410,23 @@ int main(int argc, char *argv[])
             //In the new code, the find function will search for a new line "\n" however for testing, I am using a ":" in the message
             int position_2 = recvd_message.find("\n");       
             std::string type_message = recvd_message.substr(0,position_2); //Make a substring called type_message that stores either "CTRL" or "DATA" depending on the packet
-            //std::cout << "Type: " << type_message << std::endl; //Print out to the Screen
+            //std::cout<<std::endl << "Type: " << type_message << std::endl; //Print out to the Screen
             
             //Extract the body of the message
             recvd_message = recvd_message.erase(0, position_2+1); //Remove the Type of message header from the string
 
-           // std::cout <<"Type of Message = " << type_message <<std::endl;
+           // std::cout<<std::endl <<"Type of Message = " << type_message <<std::endl;
+
+
+            // -----------------------------------------------------------
+            //                  CTRL: UPDATE, SEND ON UPDATES
+            // -----------------------------------------------------------
 
             if(type_message == "CTRL"){
                 // so we've received an updated DV from our neighbour
 
                 char source;
+                //std::string src(1,source);
                 DV_MAP recvdDVs;
                 
 
@@ -410,12 +457,27 @@ int main(int argc, char *argv[])
                 // std::cout << std::endl;
 
 
+
+                DV_MAP::iterator itrDV;
+                 // print out DV table
+                std::cout<<std::endl<<"printing previous tables";
+                newFileName<<std::endl<< "\nDV-table for " << nodename << ": \n\n";
+                newFileName<<std::endl<< "Dest\tTot Cost\n";
+                for (itrDV = nodeDVs.begin(); itrDV != nodeDVs.end(); ++itrDV) {
+                    newFileName<< itrDV->first;
+                    if(itrDV->second==INT_MAX) newFileName<<std::endl<< '\t' << "\u221E"<< "\n"; // if infinity
+                    else newFileName<<std::endl<< '\t' << itrDV->second << "\n";
+                }
+                newFileName<<std::endl;
+                    
+               
+               
+                //need to write the out the DV that changed everything
                 // dv update returns 1 if there are changes made
                 // ...to our neighbour table distancevectors
 
                 if(dvupdate(nodename[0], source, recvdDVs, &neighbourtable, &nodeDVs, &nodeFT)) {
                     
-
                     
                     //std::cout << "table updated! now need to perform bellman-ford...\n";
                     
@@ -424,7 +486,7 @@ int main(int argc, char *argv[])
                     if(bellmanford(neighbourtable, &nodeDVs, &nodeFT)) {
 
                         // print out our updated DV table
-                        DV_MAP::iterator itrDV;
+                        
                         std::cout << "\nupdated DV table" << ": \n\n";
                         std::cout << "Dest\tTot Cost\n";
                         for (itrDV = nodeDVs.begin(); itrDV != nodeDVs.end(); ++itrDV) {
@@ -442,32 +504,94 @@ int main(int argc, char *argv[])
                             << '\t' << itrFT->second << "\n\n";
                         }
 
+
+
+                        //------------------------------------------------------------
+                        //                update neighbours with new DV
+                        //------------------------------------------------------------
+
+
+                        msg = dvtostring(nodeDVs,nodename);
+
+                        //std::cout<<std::endl <<"Message = " << mess <<std::endl;
+                        // std::string ping_msg = s + " TYPE:CTRL " + itrN->first + " on port: " + itrN->second.port + '\n';
+
+            
+                        for (itrN = neighbourtable.begin(); itrN != neighbourtable.end(); ++itrN) {
+            
+                            //std::string DESTPEER = argv[2];
+                            // find DESTPEER port in neighbour table....
+                            
+                            // std::string ping_msg = nodename + " TYPE:CTRL " + itrN->first + " on port: " + itrN->second.port + '\n';
+                            
+                            if ((rv = getaddrinfo("localhost", itrN->second.port, &hints, &servinfo)) != 0) {
+                                fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+                                return 1;
+                            }
+                            // loop through all the results and make a socket(unused?) -> get address
+                            for(p = servinfo; p != NULL; p = p->ai_next) {
+                                if (socket(p->ai_family, p->ai_socktype,
+                                        p->ai_protocol) == -1) {
+                                    perror("socket");
+                                    continue;
+                                }
+                                break;
+                            }
+                        
+                            if (p == NULL) {
+                                fprintf(stderr, "failed to create socket\n");
+                                return 2;
+                            }
+                        
+                            if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
+                                                p->ai_addr, p->ai_addrlen)) == -1) {
+                                perror("sendto");
+                                exit(1);
+                            }
+                            
+                            //std::cout<<std::endl << " " << itrN->first;
+                
+                        } // updated all neighbours
+
+
+
+
+
                     }
 
                 }
+                // print out DV table
+                // declaring argument of time() 
+                //if(std::cout<<std::endl.is_open()){
+                std::cout<<std::endl<<"printing updated tables";
 
-
-               // print out DV table
-                // DV_MAP::iterator itrDV;
-                // std::cout << "\nDV-table for " << source << ": \n\n";
-                // std::cout << "Dest\tTot Cost\n";
-                // for (itrDV = recvdDVs.begin(); itrDV != recvdDVs.end(); ++itrDV) {
-                //     std::cout << itrDV->first;
-                //     if(itrDV->second==INT_MAX) std::cout << '\t' << "\u221E"<< "\n"; // if infinity
-                //     else std::cout << '\t' << itrDV->second << "\n";
-                // }
-                // std::cout << std::endl;
+                //std::cout<<std::endl.open(fileName, std::ios::app);
+                // if(std::cout<<std::endl.is_open()){
+                // time_t my_time = time(NULL); 
+                // std::cout<<std::endl<<ctime(&my_time);
+                
+                //DV_MAP::iterator itrDV;
+                newFileName<<ctime(&my_time)<<std::endl << "\nDV-table for " << nodename << ": \n\n";
+                newFileName<<std::endl << "Destination | \tTotal Cost | \tOutgoing UDP port | \tDestination UDP port | ";
+                for (itrDV = nodeDVs.begin(); itrDV != nodeDVs.end(); ++itrDV) {
+                    newFileName<<std::endl << '\t' <<  itrDV->first;
+                    if(itrDV->second==INT_MAX) newFileName<< '\t' << "\u221E"<< "\n"; // if infinity
+                    else newFileName<< '\t' << '\t' << '\t' << '\t' <<  itrDV->second << '\n';}
+                newFileName<<std::endl << std::endl;
 
                 // printing FT
-                // FT_MAP::iterator itrFT;
-                // std::cout << "\nForward-table for " << nodename << ": \n\n";
-                // std::cout << "\tNeigh\tPort\n";
-                // for (itrFT = nodeFT.begin(); itrFT != nodeFT.end(); ++itrFT) {
-                //     std::cout << '\t' << itrFT->first
-                //     << '\t' << itrFT->second << "\n";
-                // }                
-
+                FT_MAP::iterator itrFT;
+                newFileName<<std::endl << "\nForward-table for " << nodename << ": \n\n";
+                newFileName<<std::endl << "\tNeigh\tPort\n";
+                for (itrFT = nodeFT.begin(); itrFT != nodeFT.end(); ++itrFT) {
+                    newFileName<<std::endl << '\t' << itrFT->first
+                    << '\t' << itrFT->second << "\n";
+                }   
+                newFileName.close();             
             }
+                
+            
+            //}
 
 
 
@@ -475,6 +599,9 @@ int main(int argc, char *argv[])
             // -----------------------------------------------------------
             //                  DATA: FORWARD MESSAGE ON
             // -----------------------------------------------------------
+
+
+
             
             // how do we find the address of the node we want to send to?
             //  -> use socket() to get the address of the destination port...
@@ -484,44 +611,93 @@ int main(int argc, char *argv[])
             // now use socket()...
             //  -> to get the address we need: [p->ai_addr, p->ai_addrlen]
             
-            //
-            //            if ((rv = getaddrinfo("localhost", DESTPEER, &hints, &servinfo)) != 0) {
-            //                fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-            //                return 1;
-            //            }
-            //            // loop through all the results and make a socket(unused?) -> get address
-            //            for(p = servinfo; p != NULL; p = p->ai_next) {
-            //                if (socket(p->ai_family, p->ai_socktype,
-            //                                     p->ai_protocol) == -1) {
-            //                    perror("talker: socket");
-            //                    continue;                std::cout << std::endl;
-            //                }
-            //                break;
-            //            }
-            //
-            //            if (p == NULL) {
-            //                fprintf(stderr, "talker: failed to create socket\n");
-            //                return 2;
-            //            }
-            //
-            //            // sending from the current server socket...
-            //            // back to the address of server2
-            //
-            //            if ((numbytes = sendto(sockfd, buf, MAXBUFLEN-1, 0,
-            //                                   p->ai_addr, p->ai_addrlen)) == -1) {
-            //                perror("talker: sendto");
-            //                exit(1);
-            //            }
+
+            if(type_message == "DATA"){
+                
+                // structure:
+                // "Type:DATA\n<parsed>
+                // Src_Node:"+ srcname +"\nSrc_Node:" + destname +"\n"+ recvd_message;
+
+                //--------------------------------------
+                //     Initial Source of packet
+                //--------------------------------------
+
+                int position_ctrl_A = recvd_message.find(":");
+                recvd_message.erase(0,position_ctrl_A+1);
+                int position_ctrl_B = recvd_message.find("\n");
+                std::string src_router_name = recvd_message.substr(0,position_ctrl_B);
+                recvd_message.erase(0, position_ctrl_B+1);
+
+                std::string srcname = src_router_name; // char* = string ??? may need to c_str() or index [0]
+
+                std::cout << "parsed source: " << srcname << std::endl;
+
+                //--------------------------------------
+                //     Final Destination Router Name
+                //--------------------------------------
+                
+                int position_ctrl_C = recvd_message.find(":");
+                recvd_message.erase(0,position_ctrl_C+1);
+                int position_ctrl_D = recvd_message.find("\n");
+                std::string dest_router_name = recvd_message.substr(0,position_ctrl_D);
+                recvd_message.erase(0, position_ctrl_D+1);
+
+                std::string destname = dest_router_name; // char* = string ??? may need to c_str() or index [0]
+
+                std::cout << "parsed destination: " << destname << std::endl;
+
+
+
+                std::cout<< "message:\n" << recvd_message << "\n";  // output what is left of the packet
+
+
+                // lookup next hop port in the forward table
+                std::string nexthop_port = nodeFT.find(destname[0])->second;
+
+                msg = "Type:DATA\nSrc_Node:"+ srcname +"\nSrc_Node:" + destname +"\n"+ recvd_message;
+                std::cout << "next hop port: " << nexthop_port << std::endl << std::endl;
+                std::cout << "message sent: "  << std::endl << msg << std::endl;
+
+    
+                // create address using port from FT...
+                if ((rv = getaddrinfo("localhost", nexthop_port.c_str(), &hints, &servinfo)) != 0) {
+                    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+                    return 1;
+                }
+
+                // loop through all the results and make a socket(unused?) -> get address
+                for(p = servinfo; p != NULL; p = p->ai_next) {
+                    if (socket(p->ai_family, p->ai_socktype,
+                                        p->ai_protocol) == -1) {
+                        perror("socket");
+                        continue;                std::cout << std::endl;
+                    }
+                    break;
+                }
+    
+                if (p == NULL) {
+                    fprintf(stderr, "failed to create socket\n");
+                    return 2;
+                }
+    
+                // send msg...
+    
+                if ((numbytes = sendto(sockfd, msg.c_str(), msg.length(), 0,
+                                                p->ai_addr, p->ai_addrlen)) == -1) {
+                    perror("sendto");
+                    exit(1);
+                }
             
-            
+            }
+
             // -----------------------------------------------------------
-            //                  CTRL: UPDATE, SEND ON UPDATES
+            //                       DATA: END
             // -----------------------------------------------------------
-                            std::cout << std::endl;
+
+
             
             
-            
-            // recall recvfrom() function
+            // recall recvfrom() function...
             
             fut = std::async(recvfrom, sockfd, buf, MAXBUFLEN-1 , 0,
                              (struct sockaddr *)&their_addr, &addr_len);
@@ -537,7 +713,9 @@ int main(int argc, char *argv[])
     freeaddrinfo(servinfo);
     close(sockfd);
     
+    //newFile.close();
     return 0;
+
 }
 
 bool bellmanford(N_MAP ntable, DV_MAP *currDV, FT_MAP *ftable) {
@@ -769,7 +947,7 @@ DV_MAP stringtodv(std::string recvd_message, char* srcnode){
     
     //---------------------------------- 
 
-    //std::cout << "stringtodv table for " << src_router_name << std::endl;
+    //std::cout<<std::endl << "stringtodv table for " << src_router_name << std::endl;
 
     while(true){
 
@@ -800,10 +978,15 @@ DV_MAP stringtodv(std::string recvd_message, char* srcnode){
 
         newtable.insert(DV_PAIR(destname[0], totalcost));
 
-        //std::cout << destname << "," << totalcost <<std::endl;
+        //std::cout<<std::endl << destname << "," << totalcost <<std::endl;
     }
     
-  //  std::cout << std::endl;
+  //  newFile << std::endl;
     
     return newtable;
+}
+bool is_file_exist(std::string fileName)
+{
+    std::ifstream infile(fileName);
+    return infile.good();
 }
