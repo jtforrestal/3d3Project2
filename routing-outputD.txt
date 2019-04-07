@@ -1,37 +1,44 @@
 
 
-DV-table for D: 
+Initial Forwarding Table for D: 
+
+-------------------------------------------------------------------
+
+Destination | 	Cost | 	Outgoing UDP Port | Destination UDP Port |
+
+		C		4		10003( Node D )		10002( Node C )	
+		F		3		10003( Node D )		10005( Node F )	
+
+-------------------------------------------------------------------
+Initial Routing Table
+Sun Apr  7 03:32:35 2019
+
+DV-table for D
+___________________________________
+
+Destination |	C	F
+Cost        |	4	3
+___________________________________
+
+Sun Apr  7 03:32:35 2019
 
 
-Dest	Tot Cost
-C
-	4
-F
-	3
+Updated DV-table for D: 
 
-Sun Apr  7 03:20:06 2019
+___________________________________
 
+Destination |	B	C	E	F
+Cost        |	4	4	6	3
+___________________________________
 
-DV-table for D: 
+Updated Forwarding Table
+-------------------------------------------------------------------
 
+Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
 
-Destination | 	Total Cost | 	Outgoing UDP port | 	Destination UDP port | 
-	B				7
+	B			4		10003( Node D )			10005	
+	C			4		10003( Node D )			10002	
+	E			6		10003( Node D )			10005	
+	F			3		10003( Node D )			10005	
 
-	C				4
-
-	F				3
-
-
-
-
-Forward-table for D: 
-
-
-	Neigh	Port
-
-	B	10002
-
-	C	10002
-
-	F	10005
+-------------------------------------------------------------------
