@@ -1,5 +1,4 @@
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -8,19 +7,61 @@ Destination |	A	C	E	F
 Cost        |	4	3	2	1
 ___________________________________
 
+Table updated based on following incoming table from node :A
+B  , 4E  , 1Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	E	F
+Cost        |	4	3	2	1
+___________________________________
+
+Table updated based on following incoming table from node :C
+B  , 3D  , 4F  , 1Mon Apr  8 04:35:22 2019
+
+updated DV table: 
+
+___________________________________________________
+
+Destination |	A	C	D	E	F
+
+Cost        |	4	3	7	2	1
+___________________________________________________
 
 Updated Forwarding Table
 -------------------------------------------------------------------
 
 Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
 
-	A			4		10001( Node B )			10000	
-	C			2		10001( Node B )			10005	
-	D			4		10001( Node B )			10005	
-	E			2		10001( Node B )			10004	
-	F			1		10001( Node B )			10005	
+	A	4		10001( Node B )		10000	
+	C	3		10001( Node B )		10002	
+	D	7		10001( Node B )		10002	
+	E	2		10001( Node B )		10004	
+	F	1		10001( Node B )		10005	
 
 -------------------------------------------------------------------
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E	F
+Cost        |	4	3	7	2	1
+___________________________________
+
+Table updated based on following incoming table from node :F
+B  , 1C  , 1D  , 3E  , 3Mon Apr  8 04:35:22 2019
+
+updated DV table: 
+
+___________________________________________________
+
+Destination |	A	C	D	E	F
+
+Cost        |	4	2	4	2	1
+___________________________________________________
+
 Updated Forwarding Table
 -------------------------------------------------------------------
 
@@ -34,7 +75,6 @@ Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
 
 -------------------------------------------------------------------
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -44,7 +84,16 @@ Cost        |	4	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E	F
+Cost        |	4	2	4	2	1
+___________________________________
+
+Table updated based on following incoming table from node :C
+B  , 2D  , 4E  , 4F  , 1Initial Routing Table
 
 DV-table for B
 ___________________________________
@@ -54,7 +103,6 @@ Cost        |	4	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -63,49 +111,18 @@ Destination |	A	C	D	E	F
 Cost        |	4	2	4	2	1
 ___________________________________
 
-Initial Routing Table
-Sun Apr  7 04:35:43 2019
+Table updated based on following incoming table from node :E
+A  , 1B  , 2C  , 4D  , 6F  , 3Mon Apr  8 04:35:22 2019
 
-DV-table for B
-___________________________________
+updated DV table: 
 
-Destination |	A	C	D	E	F
-Cost        |	4	2	4	2	1
-___________________________________
-
-Initial Routing Table
-Sun Apr  7 04:35:43 2019
-
-DV-table for B
-___________________________________
+___________________________________________________
 
 Destination |	A	C	D	E	F
-Cost        |	4	2	4	2	1
-___________________________________
 
-Initial Routing Table
-Sun Apr  7 04:35:43 2019
+Cost        |	3	2	4	2	1
+___________________________________________________
 
-DV-table for B
-___________________________________
-
-Destination |	A	C	D	E	F
-Cost        |	4	2	4	2	1
-___________________________________
-
-
-Updated Forwarding Table
--------------------------------------------------------------------
-
-Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
-
-	A			3		10001( Node B )			10004	
-	C			2		10001( Node B )			10005	
-	D			4		10001( Node B )			10005	
-	E			2		10001( Node B )			10004	
-	F			1		10001( Node B )			10005	
-
--------------------------------------------------------------------
 Updated Forwarding Table
 -------------------------------------------------------------------
 
@@ -119,7 +136,36 @@ Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
 
 -------------------------------------------------------------------
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E	F
+Cost        |	3	2	4	2	1
+___________________________________
+
+Table updated based on following incoming table from node :A
+B  , 3C  , 5D  , 7E  , 1F  , 4Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E	F
+Cost        |	3	2	4	2	1
+___________________________________
+
+Table updated based on following incoming table from node :C
+A  , 7B  , 2D  , 4E  , 4F  , 1Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E	F
+Cost        |	3	2	4	2	1
+___________________________________
+
+Table updated based on following incoming table from node :F
+A  , 4B  , 1C  , 1D  , 3E  , 3Initial Routing Table
 
 DV-table for B
 ___________________________________
@@ -129,7 +175,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -139,7 +184,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -149,7 +193,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -159,7 +202,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -169,7 +211,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -179,7 +220,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -189,7 +229,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -199,7 +238,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -209,7 +247,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -219,7 +256,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -229,7 +265,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -239,7 +274,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -249,7 +283,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -259,7 +292,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -269,7 +301,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -279,7 +310,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -289,7 +319,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -299,7 +328,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -309,7 +337,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -319,7 +346,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -329,7 +355,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -339,7 +364,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -349,7 +373,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -359,7 +382,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -369,7 +391,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -379,7 +400,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -389,7 +409,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -399,7 +418,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -409,7 +427,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -419,7 +436,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -429,7 +445,6 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
@@ -439,112 +454,323 @@ Cost        |	3	2	4	2	1
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	E
+Cost        |	4	3	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	E
+Cost        |	4	3	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	E
+Cost        |	4	3	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	E
+Cost        |	4	3	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	E
+Cost        |	4	3	2
+___________________________________
+
+Table updated based on following incoming table from node :C
+B  , 3D  , 4Mon Apr  8 04:35:22 2019
+
+updated DV table: 
+
+___________________________________________________
+
+Destination |	A	C	D	E
+
+Cost        |	4	3	7	2
+___________________________________________________
+
+Updated Forwarding Table
+-------------------------------------------------------------------
+
+Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
+
+	A	4		10001( Node B )		10004	
+	C	3		10001( Node B )		10005	
+	D	7		10001( Node B )		10002	
+	E	2		10001( Node B )		10004	
+
+-------------------------------------------------------------------
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	4	3	7	2
+___________________________________
+
+Table updated based on following incoming table from node :A
+B  , 4E  , 1Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	4	3	7	2
+___________________________________
+
+Table updated based on following incoming table from node :E
+A  , 1B  , 2Mon Apr  8 04:35:22 2019
+
+updated DV table: 
+
+___________________________________________________
+
+Destination |	A	C	D	E
+
+Cost        |	3	3	7	2
+___________________________________________________
+
+Updated Forwarding Table
+-------------------------------------------------------------------
+
+Destination | 	Cost | 	Outgoing UDP Port | Next Hop UDP Port |
+
+	A	3		10001( Node B )		10004	
+	C	3		10001( Node B )		10005	
+	D	7		10001( Node B )		10002	
+	E	2		10001( Node B )		10004	
+
+-------------------------------------------------------------------
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Table updated based on following incoming table from node :A
+B  , 3C  , 7E  , 1Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Table updated based on following incoming table from node :C
+A  , 7B  , 3D  , 4E  , 5Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Table updated based on following incoming table from node :A
+B  , 3C  , 7D  , 11E  , 1Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Table updated based on following incoming table from node :E
+A  , 1B  , 2C  , 5D  , 9Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
 ___________________________________
 
 Initial Routing Table
-Sun Apr  7 04:35:43 2019
 
 DV-table for B
 ___________________________________
 
-Destination |	A	C	D	E	F
-Cost        |	3	2	4	2	1
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
+___________________________________
+
+Initial Routing Table
+
+DV-table for B
+___________________________________
+
+Destination |	A	C	D	E
+Cost        |	3	3	7	2
 ___________________________________
 
